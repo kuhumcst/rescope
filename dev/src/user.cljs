@@ -1,10 +1,20 @@
 (ns user
-  (:require [reagent.core :as r]
+  (:require [shadow.resource :as sr]
+            [clojure.pprint :refer [pprint]]
+            [reagent.core :as r]
             [kuhumcst.facsimile.core :as facsimile]))
+
+(def tei-example
+  (sr/inline "tei_example.xml"))
 
 (defn app
   []
-  [:p "Hello, facsimile world!"])
+  (let [xml-hiccup (facsimile/xml->hiccup tei-example)]
+    [:<>
+     [:details
+      [:pre
+       (with-out-str (pprint xml-hiccup))]]
+     xml-hiccup]))
 
 (def root
   (js/document.getElementById "app"))

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:t="http://www.tei-c.org/ns/1.0">
+    <teiHeader xml:lang="da">
+        <fileDesc>
+            <titleStmt>
+                <title xml:lang="da">JH-til-LH-12-07-1956</title>
+                <title xml:lang="en">JH-to-LH-12-07-1956</title>
+
+                <author ref="#louishjelmslev">Louis Hjelmslev</author>
+                <editor ref="#fransgregersen" role="commenting">Frans Gregersen</editor>
+
+                <funder>Carlsbergfondet</funder>
+
+                <respStmt>
+                    <resp>Transskription <persName ref="#madsnielsen">Mads Nielsen</persName></resp>
+                    <resp>Digitaliseringsafdelingen, Det Kongelige Bibliotek</resp>
+                    <orgName>Det Kongelige Bibliotek</orgName>
+                </respStmt>
+            </titleStmt>
+
+            <publicationStmt>
+                <publisher>Henrik Jørgensen, Aarhus Universitet</publisher>
+                <pubPlace>CLARIN-DK</pubPlace>
+                <date when="2020"><!-- udfyldes når vi ved hvornår det bliver publiceret--></date>
+                <date notBefore="2019" notAfter="2022" cert="unknown">abc</date>
+                <date from="2019" to="2022" cert="high">abc</date>
+            </publicationStmt>
+
+            <sourceDesc>
+                <msDesc>
+                    <msIdentifier>
+                        <settlement ref="#københavn">København</settlement>
+                        <repository ref="#detkongeligebibliotek">Det Kongelige
+                            Bibliotek</repository>
+                        <idno>1234</idno>
+                    </msIdentifier>
+                    <physDesc>
+                        <objectDesc form="letter">
+                            <supportDesc material="paper">
+                                <support>original</support>
+                                <extent>
+                                    <note>1 ark/2 blade</note>
+                                    <dimensions scope="all" type="leaf" unit="cm">
+                                        <height>10</height>
+                                        <width>20</width>
+                                    </dimensions>
+                                </extent>
+                            </supportDesc>
+                        </objectDesc>
+                        <handDesc>
+                            <p>Maskinskrevet med håndskrevne noter.</p>
+                        </handDesc>
+                        <accMat>abc</accMat>
+                    </physDesc>
+                </msDesc>
+            </sourceDesc>
+        </fileDesc>
+
+        <profileDesc>
+            <correspDesc>
+                <correspAction type="sent">
+                    <persName ref="#louishjelmslev">Louis Hjelmslev</persName>
+                    <placeName ref="#charlottenlund">Charlottenlund</placeName>
+                    <date when="1111-12-30">1234</date>
+                    <date from="2019" to="2020">1234</date>
+                </correspAction>
+                <correspAction type="received">
+                    <persName ref="#jensholt">Jens Holt</persName>
+                    <placeName ref="#århus">Århus</placeName>
+                </correspAction>
+            </correspDesc>
+            <langUsage>
+                <language ident="da">Dansk</language>
+            </langUsage>
+        </profileDesc>
+        <revisionDesc>
+            <listChange>
+                <change when="2019-10-30" who="#carolinehvboolsen">Udfyldt for at teste
+                    rng-skema.</change>
+            </listChange>
+        </revisionDesc>
+
+    </teiHeader>
+    <facsimile>
+        <graphic xml:id="page12.345" mimeType="image/pdf" url="Kps12(345).pdf"/>
+    </facsimile>
+
+    <text>
+        <body>
+            <div type="letter">
+                <pb n="1" facs="#page12.345"/>
+                <fw type="note" place="top" resp="#louishjelmslev">18/56</fw>
+                <opener xml:id="sx1">
+                    <dateline>
+                        <address>
+                            <street>abc 123</street>
+                            <addrLine>abc</addrLine>
+                            <postCode>2100</postCode>
+                            <settlement ref="#københavn">abc</settlement>
+                            <country ref="#danmark">Danmark</country>
+                        </address>
+                        <settlement ref="#charlottenlund">Charlottenlund</settlement>
+                        <date when="1935-01-08">1234</date>
+                    </dateline>
+                    <salute><persName type="receiver" ref="#jensholt">abc</persName></salute>
+                </opener>
+                <p xml:id="px1"><hi rend="underline" resp="hand" hand="#louishjelmslev" cert="high"
+                        >abc</hi></p>
+                <p><ptr target="#nx1"/></p>
+                <p><persName ref="#louishjelmslev"><forename type="first">abc</forename><forename type="middle"
+                            >def</forename><surname>hij</surname></persName></p>
+                <p><placeName type="country">England</placeName></p>
+                <p><term ref="#glossematik">abc</term></p>
+                <p><rs type="conference" ref="#fxsra1956">abc</rs></p>
+                <p><lang xml:lang="deu">tysk</lang></p>
+                <p><choice><sic>dærva</sic><corr>dærav</corr></choice></p>
+                <p><unclear reason="illegible">abc</unclear></p>
+                <p><gap unit="chars" quantity="5" reason="illegible"/></p>
+                <p><add resp="#louishjelmslev" place="above">abc</add></p>
+                <list rend="bulleted"><item></item></list>
+                <p><figure type="schema" facs="#page12.345"/></p>
+                <closer xml:id="sx2">
+                    <salute><persName type="sender" ref="#louishjelmslev">Louis
+                        Hjelmslev</persName></salute>
+                </closer>
+                <postscript>
+                    <label>P.S.</label>
+                    <p>abc</p>
+                </postscript>
+            </div>
+            <div type="notes" xml:id="nx1">
+                <note>abc</note>
+            </div>
+        </body>
+    </text>
+
+</TEI>
