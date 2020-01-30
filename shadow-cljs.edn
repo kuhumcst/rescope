@@ -1,5 +1,7 @@
 {:deps     {:aliases [:shadow-cljs]}
  :dev-http {8000 "classpath:public"}
+ :nrepl    {:port    9000
+            :init-ns dev}
  :builds   {:app {:target     :browser
                   :output-dir "resources/public/js/compiled"
                   :asset-path "js"
