@@ -1,8 +1,9 @@
 Facsimile
 =========
 
-A facsimile viewer implemented as a [reagent](https://github.com/reagent-project/reagent) component utilising [custom HTML components](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) to embed [TEI-flavoured XML](https://tei-c.org/) directly into an HTML page.
+A facsimile viewer implemented as a [reagent](https://github.com/reagent-project/reagent) component utilising [custom HTML components](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) to embed XML directly into an HTML page.
 
+The main purpose is to be able to display [TEI-flavoured XML](https://tei-c.org/) next to a PDF/image viewer, but in fact any valid XML can be embedded.
 
 Development prerequisites
 -------------------------
