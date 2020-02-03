@@ -2,7 +2,8 @@
   (:require [shadow.resource :as resource]
             [clojure.pprint :refer [pprint]]
             [reagent.core :as r]
-            [kuhumcst.facsimile.xml :as xml]))
+            [kuhumcst.facsimile.xml :as xml]
+            [kuhumcst.facsimile.components :as components]))
 
 (def tei-example
   (resource/inline "tei_example.xml"))
@@ -37,7 +38,7 @@
       [:details
        [:summary "Hiccup"]
        [:pre (with-out-str (pprint text))]]
-      text]
+      [components/xml-view text]]
      [:fieldset
       [:legend "Test output"]
       [:pre (with-out-str (pprint test-nodes))]]]))

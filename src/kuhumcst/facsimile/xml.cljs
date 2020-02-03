@@ -75,9 +75,12 @@
     (every-pred vector? (comp map? second) contains-attr?)))
 
 (defn select-all
-  "Select all elements satisfying `preds` from an `xml` tree."
+  "Select all elements satisfying `preds` from an `xml` tree. If no predicates
+  are specified, all elements in the XML will be returned."
   [xml & preds]
-  (let [satisfies-preds? (apply every-pred preds)]
+  (let [satisfies-preds? (if (empty? preds)
+                           vector?
+                           (apply every-pred preds))]
     (loop [[node _ :as loc] (hzip/hiccup-zip xml)
            nodes []]
       (if (zip/end? loc)
@@ -93,8 +96,8 @@
   (first (apply select-all xml preds)))
 
 (defn transform
-  "Apply `transform-fn` to every loc in zipper starting at root of an `xml` tree
-  and return the transformed structure."
+  "Apply `transform-fn` to every loc in the zipper starting at the root of an
+  `xml` tree and return the transformed structure."
   [transform-fn xml]
   (loop [loc (hzip/hiccup-zip xml)]
     (if (zip/end? loc)
