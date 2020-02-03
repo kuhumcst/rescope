@@ -9,21 +9,17 @@
 
 (defn app
   []
-  (let [xml-hiccup (xml/parse tei-example)
-        zipper     (xml/zip xml-hiccup)
-        teiheader  (xml/select zipper
-                               (xml/element :tei-teiheader))
-        facsimile  (xml/select zipper
-                               (xml/element :tei-facsimile))
-        text       (xml/select zipper
-                               (xml/element :tei-text))
-        test-nodes (xml/select-all zipper
+  (let [xml        (xml/parse tei-example)
+        teiheader  (xml/select xml (xml/element :tei-teiheader))
+        facsimile  (xml/select xml (xml/element :tei-facsimile))
+        text       (xml/select xml (xml/element :tei-text))
+        test-nodes (xml/select-all xml
                                    (xml/element :tei-forename)
                                    (xml/attr {:type "first"}))]
     [:<>
      [:details
       [:summary "Full hiccup parse"]
-      [:pre (with-out-str (pprint xml-hiccup))]]
+      [:pre (with-out-str (pprint xml))]]
      [:fieldset
       [:legend "Header"]
       [:details

@@ -1,5 +1,5 @@
 (ns kuhumcst.facsimile.xml
-  "Parse XML as hiccup and select elements from a zipped representation."
+  "Parse XML as hiccup and select elements from the parsed representation."
   (:require [clojure.string :as str]
             [clojure.zip :as zip]
             [hickory.core :as hickory]
@@ -45,22 +45,22 @@
 
 (defn- preprocess-fn
   "Create an fn for preprocessing an XML-derived hiccup zipper `loc` based on a
-  `root` loc. The initial hiccup structure is trimmed and the name of the root
-  element is used as a prefix for all elements."
-  [[root-node _ :as root]]
+  `prefix-tag`. The hiccup structure is trimmed and the prefix is applied to all
+  elements."
+  [prefix-tag]
   (fn [[node _ :as loc]]
-    (let [root-element (name (first root-node))]
-      (cond
-        (string? node) (trim-str loc)
-        (vector? node) (->> (trim-vec loc)
-                            (add-prefix root-element))))))
+    (cond
+      (string? node) (trim-str loc)
+      (vector? node) (->> (trim-vec loc)
+                          (add-prefix (name prefix-tag))))))
 
 (defn element
-  "Create an element selector predicate based on a `tag` name."
-  ([tag]
-   (every-pred vector? (comp (partial = tag) first)))
-  ([]
-   vector?))
+  "Create an element selector predicate for element `tags`. Will select elements
+  present in the list of tags. Selects all elements if no tags are specified."
+  [& tags]
+  (if (empty? tags)
+    vector?
+    (every-pred vector? (comp (set tags) first))))
 
 (defn attr
   "Create an attribute selector predicate based on `attr`. Passing a set as attr
@@ -75,45 +75,43 @@
     (every-pred vector? (comp map? second) contains-attr?)))
 
 (defn select-all
-  "Select all nodes satisfying `preds` from zipper starting at `root` loc."
-  [root & preds]
-  (loop [[node _ :as loc] root
-         nodes []]
-    (if (zip/end? loc)
-      nodes
-      (recur (zip/next loc) (if ((apply every-pred preds) node)
-                              (conj nodes node)
-                              nodes)))))
+  "Select all elements satisfying `preds` from an `xml` tree."
+  [xml & preds]
+  (let [satisfies-preds? (apply every-pred preds)]
+    (loop [[node _ :as loc] (hzip/hiccup-zip xml)
+           nodes []]
+      (if (zip/end? loc)
+        nodes
+        (recur (zip/next loc) (if (satisfies-preds? node)
+                                (conj nodes node)
+                                nodes))))))
 
 ;; TODO: optimise - quit loop faster?
 (defn select
-  "Select the first node satisfying `preds` from zipper starting at `root` loc."
-  [root & preds]
-  (first (apply select-all root preds)))
+  "Select the first element satisfying `preds` from an `xml` tree."
+  [xml & preds]
+  (first (apply select-all xml preds)))
 
 (defn transform
-  "Apply `transform-fn` to every loc in zipper starting at `root` loc and return
-  the transformed structure."
-  [transform-fn root]
-  (loop [loc root]
+  "Apply `transform-fn` to every loc in zipper starting at root of an `xml` tree
+  and return the transformed structure."
+  [transform-fn xml]
+  (loop [loc (hzip/hiccup-zip xml)]
     (if (zip/end? loc)
       (zip/root loc)
       (recur (zip/next (transform-fn loc))))))
 
-(def zip
-  hzip/hiccup-zip)
-
-;; Note: Hickory in fact calls the same DOM method in `hickory.core/parse`, but
-;; uses the "text/html" mimetype rather than "text/xml" like we need.
+;; Hickory in fact calls the same DOM method in `hickory.core/parse`, but has
+;; been hardcoded to use the "text/html" mimetype rather than "text/xml"!
 (defn- dom-parse
-  [xml]
+  [xml-str]
   (-> (js/DOMParser.)
-      (.parseFromString xml "text/xml")
+      (.parseFromString xml-str "text/xml")
       (.-firstChild)))
 
 ;; TODO: handle XML comments?
 (defn parse
-  "Convert an `xml` string into a hiccup representation."
-  [xml]
-  (let [root (-> xml dom-parse hickory/as-hiccup zip)]
-    (transform (preprocess-fn root) root)))
+  "Convert an `xml-str` into a hiccup representation."
+  [xml-str]
+  (let [initial-xml (-> xml-str dom-parse hickory/as-hiccup)]
+    (transform (preprocess-fn (first initial-xml)) initial-xml)))
