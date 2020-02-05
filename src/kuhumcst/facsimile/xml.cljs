@@ -4,18 +4,8 @@
             [clojure.zip :as zip]
             [clojure.set :as set]
             [hickory.core :as hickory]
-            [hickory.zip :as hzip]))
-
-(def reserved-tags
-  "Certain dash-separated tags are already reserved for e.g. SVG and MathML."
-  #{"annotation-xml"
-    "color-profile"
-    "font-face"
-    "font-face-src"
-    "font-face-uri"
-    "font-face-format"
-    "font-face-name"
-    "missing-glyph"})
+            [hickory.zip :as hzip]
+            [kuhumcst.facsimile.util :as util]))
 
 (def attr-conversions
   "Mapping from common XML attributes to their HTML counterparts."
@@ -23,11 +13,11 @@
    :xml:lang :lang})
 
 (defn- trim-str
-  "Remove any blank and trim any non-blank strings of a string node `loc`."
+  "Remove any blank strings from a string node `loc`."
   [[node _ :as loc]]
   (if (str/blank? node)
     (zip/remove loc)
-    (zip/replace loc (str/trim node))))
+    loc))
 
 (defn- remove-comment
   "Remove any strings converted from XML comments from a string node `loc`."
@@ -56,11 +46,8 @@
   "Transform a hiccup vector node `loc` to a valid custom element name by
   setting a custom `prefix`."
   [prefix [node _ :as loc]]
-  (let [tag          (name (first node))
-        prefixed-tag (str prefix "-" tag)
-        new-tag      (keyword (if (contains? reserved-tags prefixed-tag)
-                                (str prefixed-tag "-x")
-                                prefixed-tag))]
+  (let [tag     (name (first node))
+        new-tag (keyword (util/prefixed prefix tag))]
     (zip/replace loc (apply vector new-tag (rest node)))))
 
 (defn- preprocess-fn
@@ -134,8 +121,11 @@
       (.parseFromString xml-str "text/xml")
       (.-firstChild)))
 
-(defn parse
+(defn hiccup-parse
   "Convert an `xml-str` into a hiccup representation."
   [xml-str]
-  (let [initial-xml (-> xml-str dom-parse hickory/as-hiccup)]
-    (transform (preprocess-fn (first initial-xml)) initial-xml)))
+  (-> xml-str dom-parse hickory/as-hiccup))
+
+(defn preprocess
+  [initial-xml]
+  (transform (preprocess-fn (first initial-xml)) initial-xml))
