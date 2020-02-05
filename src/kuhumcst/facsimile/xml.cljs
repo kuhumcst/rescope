@@ -2,27 +2,12 @@
   "Parse XML as hiccup and select elements from the parsed representation."
   (:require [clojure.string :as str]
             [clojure.zip :as zip]
+            [clojure.set :as set]
             [hickory.core :as hickory]
             [hickory.zip :as hzip]))
 
-(defn- trim-str
-  "Remove any blank and trim any non-blank strings of a string node `loc`."
-  [[node _ :as loc]]
-  (if (str/blank? node)
-    (zip/remove loc)
-    (zip/replace loc (str/trim node))))
-
-(defn- trim-vec
-  "Remove the empty attr from a hiccup vector node `loc`."
-  [[node _ :as loc]]
-  (if (and (map? (second node))
-           (empty? (second node)))
-    (zip/replace loc (vec (concat (subvec node 0 1)
-                                  (subvec node 2))))
-    loc))
-
-;; https://stackoverflow.com/questions/22545621/do-custom-elements-require-a-dash-in-their-name#tab-top
-(def illegal-names
+(def reserved-tags
+  "Certain dash-separated tags are already reserved for e.g. SVG and MathML."
   #{"annotation-xml"
     "color-profile"
     "font-face"
@@ -32,13 +17,48 @@
     "font-face-name"
     "missing-glyph"})
 
+(def attr-conversions
+  "Mapping from common XML attributes to their HTML counterparts."
+  {:xml:id   :id
+   :xml:lang :lang})
+
+(defn- trim-str
+  "Remove any blank and trim any non-blank strings of a string node `loc`."
+  [[node _ :as loc]]
+  (if (str/blank? node)
+    (zip/remove loc)
+    (zip/replace loc (str/trim node))))
+
+(defn- remove-comment
+  "Remove any strings converted from XML comments from a string node `loc`."
+  [[node _ :as loc]]
+  (if (and (str/starts-with? node "<!--")
+           (str/ends-with? node "-->"))
+    (zip/remove loc)
+    loc))
+
+(defn- trim-vec
+  "Remove the empty attr from a hiccup vector node `loc`."
+  [[[tag attr & content :as node] _ :as loc]]
+  (if (and (map? attr)
+           (empty? attr))
+    (zip/replace loc (into [tag] content))
+    loc))
+
+(defn- convert-attr
+  "Converts common XML attributes into their direct HTML counterparts."
+  [[[tag attr & content :as node] _ :as loc]]
+  (if (map? attr)
+    (zip/replace loc (assoc node 1 (set/rename-keys attr attr-conversions)))
+    loc))
+
 (defn- add-prefix
   "Transform a hiccup vector node `loc` to a valid custom element name by
   setting a custom `prefix`."
   [prefix [node _ :as loc]]
   (let [tag          (name (first node))
         prefixed-tag (str prefix "-" tag)
-        new-tag      (keyword (if (contains? illegal-names prefixed-tag)
+        new-tag      (keyword (if (contains? reserved-tags prefixed-tag)
                                 (str prefixed-tag "-x")
                                 prefixed-tag))]
     (zip/replace loc (apply vector new-tag (rest node)))))
@@ -50,8 +70,10 @@
   [prefix-tag]
   (fn [[node _ :as loc]]
     (cond
-      (string? node) (trim-str loc)
+      (string? node) (->> (trim-str loc)
+                          (remove-comment))
       (vector? node) (->> (trim-vec loc)
+                          (convert-attr)
                           (add-prefix (name prefix-tag))))))
 
 (defn element
@@ -112,7 +134,6 @@
       (.parseFromString xml-str "text/xml")
       (.-firstChild)))
 
-;; TODO: handle XML comments?
 (defn parse
   "Convert an `xml-str` into a hiccup representation."
   [xml-str]
