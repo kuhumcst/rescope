@@ -1,4 +1,4 @@
-(ns kuhumcst.facsimile.xml
+(ns kuhumcst.facsimile.parse
   "Parse XML as hiccup and select elements from the parsed representation."
   (:require [clojure.string :as str]
             [clojure.zip :as zip]
@@ -36,7 +36,7 @@
     loc))
 
 (defn- convert-attr
-  "Converts common XML attributes into their direct HTML counterparts."
+  "Convert common XML attributes into their direct HTML counterparts."
   [[[tag attr & content :as node] _ :as loc]]
   (if (map? attr)
     (zip/replace loc (assoc node 1 (set/rename-keys attr attr-conversions)))
@@ -84,13 +84,13 @@
     (every-pred vector? (comp map? second) contains-attr?)))
 
 (defn select-all
-  "Select all elements satisfying `preds` from an `xml` tree. If no predicates
-  are specified, all elements in the XML will be returned."
-  [xml & preds]
+  "Select all elements satisfying `preds` from an `hiccup` tree. If no
+  predicates are specified, all elements in the hiccup will be returned."
+  [hiccup & preds]
   (let [satisfies-preds? (if (empty? preds)
                            vector?
                            (apply every-pred preds))]
-    (loop [[node _ :as loc] (hzip/hiccup-zip xml)
+    (loop [[node _ :as loc] (hzip/hiccup-zip hiccup)
            nodes []]
       (if (zip/end? loc)
         nodes
@@ -100,15 +100,15 @@
 
 ;; TODO: optimise - quit loop faster?
 (defn select
-  "Select the first element satisfying `preds` from an `xml` tree."
-  [xml & preds]
-  (first (apply select-all xml preds)))
+  "Select the first element satisfying `preds` from an `hiccup` tree."
+  [hiccup & preds]
+  (first (apply select-all hiccup preds)))
 
 (defn transform
   "Apply `transform-fn` to every loc in the zipper starting at the root of an
-  `xml` tree and return the transformed structure."
-  [transform-fn xml]
-  (loop [loc (hzip/hiccup-zip xml)]
+  `hiccup` tree and return the transformed structure."
+  [transform-fn hiccup]
+  (loop [loc (hzip/hiccup-zip hiccup)]
     (if (zip/end? loc)
       (zip/root loc)
       (recur (zip/next (transform-fn loc))))))
@@ -116,16 +116,16 @@
 ;; Hickory in fact calls the same DOM method in `hickory.core/parse`, but has
 ;; been hardcoded to use the "text/html" mimetype rather than "text/xml"!
 (defn- dom-parse
-  [xml-str]
+  [xml]
   (-> (js/DOMParser.)
-      (.parseFromString xml-str "text/xml")
+      (.parseFromString xml "text/xml")
       (.-firstChild)))
 
-(defn hiccup-parse
-  "Convert an `xml-str` into a hiccup representation."
-  [xml-str]
-  (-> xml-str dom-parse hickory/as-hiccup))
+(defn xml->hiccup
+  "Convert an `xml` string into a hiccup representation."
+  [xml]
+  (-> xml dom-parse hickory/as-hiccup))
 
 (defn preprocess
-  [initial-xml]
-  (transform (preprocess-fn (first initial-xml)) initial-xml))
+  [hiccup]
+  (transform (preprocess-fn (first hiccup)) hiccup))

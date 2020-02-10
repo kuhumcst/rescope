@@ -2,38 +2,38 @@
   (:require [shadow.resource :as resource]
             [clojure.pprint :refer [pprint]]
             [reagent.core :as r]
-            [kuhumcst.facsimile.xml :as xml]
+            [kuhumcst.facsimile.parse :as parse]
             [kuhumcst.facsimile.style :as style]
             [kuhumcst.facsimile.core :as facsimile]))
 
 (def tei-example
-  (resource/inline "examples/tei/tei_example.xml"))
+  (resource/inline "examples/tei/1151anno-anno-tei.xml"))
 
 (def css-example
   (resource/inline "examples/css/tei.css"))
 
 (defn app
   []
-  (let [initial-xml (xml/hiccup-parse tei-example)
-        root-tag    (name (first initial-xml))
-        xml         (xml/preprocess initial-xml)
-        css         (style/prefix-css root-tag css-example)
-        teiheader   (xml/select xml (xml/element :tei-teiheader))
-        facsimile   (xml/select xml (xml/element :tei-facsimile))
-        text        (xml/select xml (xml/element :tei-text))
-        test-nodes  (xml/select-all xml
-                                    (xml/element :tei-forename)
-                                    (xml/attr {:type "first"}))]
+  (let [initial-hiccup (parse/xml->hiccup tei-example)
+        root-tag       (name (first initial-hiccup))
+        hiccup         (parse/preprocess initial-hiccup)
+        css            (style/prefix-css root-tag css-example)
+        teiheader      (parse/select hiccup (parse/element :tei-teiheader))
+        facsimile      (parse/select hiccup (parse/element :tei-facsimile))
+        text           (parse/select hiccup (parse/element :tei-text))
+        test-nodes     (parse/select-all hiccup
+                                         (parse/element :tei-forename)
+                                         (parse/attr {:type "first"}))]
     [:<>
      [:fieldset
       [:legend "Document"]
       [:details
        [:summary "Hiccup"]
-       [:pre (with-out-str (pprint xml))]]
+       [:pre (with-out-str (pprint hiccup))]]
       [:details
        [:summary "CSS"]
        [:pre css]]
-      [facsimile/xml-shadow xml css]]
+      [facsimile/shadow-content hiccup css]]
      [:fieldset
       [:legend "Header"]
       [:details
