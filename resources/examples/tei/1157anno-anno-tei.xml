@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:t="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc xml:lang="da">
+            <titleStmt>
+                <title>JH-til-VH-11-10-1965</title>
+                <author ref="#xx">Jens Holt</author>
+                <editor ref="#xx" role="commenting"><!-- kommentator --></editor>
+                <funder>Carlsbergfondet, Forskningsinfrastruktur, Infrastrukturalisme, 2018-2021</funder>
+
+                <respStmt>
+                    <resp>Transskription</resp>
+                    <persName ref="xx">Mads Nielsen</persName>
+                </respStmt>
+                <respStmt>
+                    <resp>Digitalisering</resp>
+                    <orgName>Digitaliseringsafdelingen, Det Kongelige Bibliotek</orgName>
+                </respStmt>
+            </titleStmt>
+
+            <publicationStmt>
+                <publisher>Henrik Jørgensen, Aarhus Universitet</publisher>
+                <pubPlace>CLARIN-DK</pubPlace>
+                <date when="2020"><!-- udfyldes når vi ved hvornår det bliver publiceret--></date>
+            </publicationStmt>
+
+            <sourceDesc>
+                <msDesc>
+                    <msIdentifier>
+                        <settlement ref="#København">København</settlement>
+                        <repository ref="xx">Det Kongelige Bibliotek</repository>
+                        <idno><!-- KB-id --></idno>
+                    </msIdentifier>
+                    <physDesc>
+                        <objectDesc form="letter">
+                            <supportDesc>
+                                <support>Gennemslag</support>
+                                <extent>
+                                    <note>1</note>
+                                </extent>
+                            </supportDesc>
+                        </objectDesc>
+                        <handDesc>
+                            <p>Maskinskrevet</p>
+                        </handDesc>
+                    </physDesc>
+                </msDesc>
+            </sourceDesc>
+        </fileDesc>
+
+        <profileDesc>
+            <correspDesc>
+                <correspAction type="sent">
+                    <persName ref="#xx">Jens Holt</persName>
+                    <placeName ref="#xx">Århus</placeName>
+                    <date>1965-10-11</date>
+                </correspAction>
+                <correspAction type="received">
+                    <persName ref="#xx">Vibeke Hjelmslev</persName>
+                    <placeName ref="#xx"><!-- sted --></placeName>
+                </correspAction>
+            </correspDesc>
+            <langUsage>
+                <language ident="da">da</language>
+            </langUsage>
+        </profileDesc>
+        <revisionDesc>
+            <listChange>
+                <change when="2019-10-30" who="#carolinehvboolsen">Testheader udfyldt til korrektur hos DHH</change>
+                <change when="2020-01-10" who="#dortehaltruphansen">Automatisk generering af TEI header</change>
+            </listChange>
+        </revisionDesc>
+
+    </teiHeader>
+    <facsimile>
+        <graphic xml:id="Kps24-385" mimeType="image/pdf" url="Kps24 (385).JPG
+"/>
+    </facsimile>
+
+    <text>
+        <body>
+            <div type="letter">
+                <pb n="1" facs="#Kps24-385"/>
+                <fw><!-- brevhoved/Hjelmslevs arkivnoter etc. --></fw>
+                <opener xml:id="xx">
+                    <dateline>
+                        <settlement ref="#Århus"><!-- sted --></settlement>
+                        <date when="1965-10-11"><!-- dato --></date>
+                    </dateline>
+                    <salute><persName type="receiver" ref="xx">Vibeke Hjelmslev <!-- modtager --></persName></salute>
+                </opener>
+                <p xml:id="p1"><name type="place" ref="#npl1">AARHUS</name> D. <date when="1965-10-11">11/10 1965</date></p>
+                                <p xml:id="p3">Kære <name type="pers" ref="#np57">Vibeke Hjelmslev</name>,</p>
+                <p xml:id="p4">Både Grete og jeg siger hjærtelig tak for Deres smukke brev ( <date when="---04">4. ds.</date>). Vi følte en dyb glæde over den varme der stråler ud fra ordene., og jeg takker især for bemærkningen om at føre traditionen videre.</p>
+                <p xml:id="p5" rend="handwritten">På Deres brev forstår jeg at De ikke selv har en båndmaskine. Det De så måske ønsker er en avskrift av det nævnte bånd  -mine forelæsninger existerer pt. kun på bånd. At få nedskrevet båndets term type="danishTerm">text/term vil strax være en mere indviklet proces, da min studentermedhjælp endnu slet ikke er trænet i sligt. For at der så ikke skulde gå alt for lang tid, har jeg nu avskrevet mit ms. som jeg brugte til selve mindeforelæsningen. Også dær vil De finde min opfattelse av hvor <name type="pers" ref="#np47">Louis</name> skal placeres videnskabshistorisk  -hvilket i sig selv jo næppe er noget vanskeligt problem; men mon det der vil interessere Dem mest, vil være begrundelsen.</p>                <p xml:id="p6">Jeg tænker meget på at flyve til <name type="place" ref="#npl283">Kbh</name>. måske d. <date when="---21">21. ds.</date> <name type="pers" ref="#np58">Erik <name type="pers" ref="#np58">Hoder</name></name> har netop skrevet til mig at han omkring den tid gærne vilde have en samtale med mig. Så skulde det gærne lykkes at avlægge Dem et besøg. Det kunne måske lykkes på et eller andet tidspunkt <date when="---22">fredag d. 22.</date> Jeg skal naturligvis også have avtalen med <name type="pers" ref="#np58">Hoder</name> i orden. Heldigvis slipper jeg for at deltage i det filos. fakultets møde d. <date when="---20">20. Ds.</date> om ændringer i konferensen, fordi udvalget har angivet énstemmig indstilling. Der ligger således en mulighed i slutningen av næste uge. Hvad synes De om det?</p>
+                <p xml:id="p7">Onsdag eftermiddag kommer <name type="pers" ref="#np94">Martinets</name>; han holder forelæsning i mit auditorium torsdag kl. 11 om "The Double Articulation of Language" . </p>
+                                <p xml:id="p9">Med venlige hilsner  -også fra Grete</p>
+                <p xml:id="p10">Deres hengivne</p>
+                <p xml:id="p11" rend="handwritten"><name type="pers" ref="#np60">Jens</name> Holt</p>
+                <closer xml:id="yy">
+                    <salute><persName type="sender" ref="xx">Jens Holt <!-- afsender --></persName></salute>
+                </closer>
+                <postscript>
+                    <label><!-- P.S. --></label>
+                    <p><!-- tekst --></p>
+                </postscript>
+            </div>
+            <div type="notes">
+                <note ref="#p1">24.385</note>
+            </div>
+        </body>
+    </text>
+</TEI>

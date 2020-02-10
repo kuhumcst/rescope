@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:t="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc xml:lang="da">
+            <titleStmt>
+                <title>JH-til-VH-00-00-1900</title>
+                <author ref="#xx">Jens Holt</author>
+                <editor ref="#xx" role="commenting"><!-- kommentator --></editor>
+                <funder>Carlsbergfondet, Forskningsinfrastruktur, Infrastrukturalisme, 2018-2021</funder>
+
+                <respStmt>
+                    <resp>Transskription</resp>
+                    <persName ref="xx">Mads Nielsen</persName>
+                </respStmt>
+                <respStmt>
+                    <resp>Digitalisering</resp>
+                    <orgName>Digitaliseringsafdelingen, Det Kongelige Bibliotek</orgName>
+                </respStmt>
+            </titleStmt>
+
+            <publicationStmt>
+                <publisher>Henrik Jørgensen, Aarhus Universitet</publisher>
+                <pubPlace>CLARIN-DK</pubPlace>
+                <date when="2020"><!-- udfyldes når vi ved hvornår det bliver publiceret--></date>
+            </publicationStmt>
+
+            <sourceDesc>
+                <msDesc>
+                    <msIdentifier>
+                        <settlement ref="#København">København</settlement>
+                        <repository ref="xx">Det Kongelige Bibliotek</repository>
+                        <idno><!-- KB-id --></idno>
+                    </msIdentifier>
+                    <physDesc>
+                        <objectDesc form="letter">
+                            <supportDesc>
+                                <support>Gennemslag</support>
+                                <extent>
+                                    <note>1</note>
+                                </extent>
+                            </supportDesc>
+                        </objectDesc>
+                        <handDesc>
+                            <p>Maskinskrevet</p>
+                        </handDesc>
+                    </physDesc>
+                </msDesc>
+            </sourceDesc>
+        </fileDesc>
+
+        <profileDesc>
+            <correspDesc>
+                <correspAction type="sent">
+                    <persName ref="#xx">Jens Holt</persName>
+                    <placeName ref="#xx">Århus</placeName>
+                    <date>1888-01-01</date>
+                </correspAction>
+                <correspAction type="received">
+                    <persName ref="#xx">Vibeke Hjelmslev</persName>
+                    <placeName ref="#xx"><!-- sted --></placeName>
+                </correspAction>
+            </correspDesc>
+            <langUsage>
+                <language ident="da">da</language>
+            </langUsage>
+        </profileDesc>
+        <revisionDesc>
+            <listChange>
+                <change when="2019-10-30" who="#carolinehvboolsen">Testheader udfyldt til korrektur hos DHH</change>
+                <change when="2020-01-10" who="#dortehaltruphansen">Automatisk generering af TEI header</change>
+            </listChange>
+        </revisionDesc>
+
+    </teiHeader>
+    <facsimile>
+        <graphic xml:id="Kps24-388" mimeType="image/pdf" url="Kps24 (388).JPG
+"/>
+    </facsimile>
+
+    <text>
+        <body>
+            <div type="letter">
+                <pb n="1" facs="#Kps24-388"/>
+                <fw><!-- brevhoved/Hjelmslevs arkivnoter etc. --></fw>
+                <opener xml:id="xx">
+                    <dateline>
+                        <settlement ref="#Århus"><!-- sted --></settlement>
+                        <date when="1888-01-01"><!-- dato --></date>
+                    </dateline>
+                    <salute><persName type="receiver" ref="xx">Vibeke Hjelmslev <!-- modtager --></persName></salute>
+                </opener>
+                <p xml:id="p1">Kære fru <name type="pers" ref="#np56">Hjelmslev</name>,</p>
+                <p xml:id="p2">Tak for Deres venlige brev ( <date when="---20">20. ds.</date>), og tak for Deres tilbud om at overføre visse arkivalier fra Deres mands efterladte arkiv til mit institut. Så snart jeg igen får lejlighed til at komme til Kbh., ser jeg ud til Dem. Iøvrigt var jer dærovre i fredags  -men var naturligvis flyvende -  for at tale med fonetikerne om planerne for det nye fonetiske institut hær; sagen har passeret vort fakultets byggeudvalg, så at vi nu blot venter på regerings bevilling med at gå i gang. Det drejer sig om 25 fag (som vi siger hær), men det er i penge c. 2.000.000 kr.</p>
+                <p xml:id="p3" rend="handwritten">Den <date when="--09-09">9. sept.</date> formede min første forelæsning om "indledning" sig som en mindeforelæsning om <name type="pers" ref="#np56">Louis Hjelmslev</name>. Mit ms. vil jeg endnu ikke sende Dem; det ska avpudses. Men jeg kan refere en av hovedtankerne. <name type="pers" ref="#np56">Louis Hjelmslev</name> indgår jo i rækken <name type="pers" ref="#np116">Rask</name>-Verner-de Saussere; han forholder sig jo intimt især til <name type="pers" ref="#np116">Rask</name> og de Saussure. Men Verner kommer ind i billedet, når man vil gøre relationen op. Verner fuldender <name type="pers" ref="#np116">Rask</name>  -peger altså til en vis grad bagud. <name type="pers" ref="#np56">Louis Hjelmslev</name> forholder sig til <name type="pers" ref="#np116">Rask</name> og de Saussure, naturligvis også som fuldender  -  men, til forskel fra Verner, langt snarere i reation til sprogvidenskabens fremtid, som på de allervæsentligste punkter vil komme til at bruge hans sprogtænkning som udgangspunkt og inspiration. <name type="pers" ref="#np6">Hans</name> sprogtænkning lader sig ikke avskrive og kan kun bruges når man selv ud fra den skaber noget nyt. Alt andet vil være misbrug. </p>                <p xml:id="p4">Vi håber at De har haft en god rejse i sin tid til Italien.</p>
+                <p xml:id="p5">Så snart som muligt komme jeg  -men p.t. har jeg lidt travlt. Jeg kan ikke komme i <name type="org" ref="#norg2">Lingv.kr</name>. d. <date when="---28">28. ds.</date>, fordi jeg <date when="---29">29. ds.</date> skal examinere Holmboe til magisterkonferens i sml.sprvsk. <name type="pers" ref="#np6">Hans</name> forelæsning bliver <date when="--10-06">6. okt.</date></p>
+                <p xml:id="p6">De venligste hilsener også fra min kone</p>
+                <p xml:id="p7">Deres hengivne</p>
+                <p xml:id="p8" rend="handwritten"><name type="pers" ref="#np60">Jens</name> Holt</p>
+                <closer xml:id="yy">
+                    <salute><persName type="sender" ref="xx">Jens Holt <!-- afsender --></persName></salute>
+                </closer>
+                <postscript>
+                    <label><!-- P.S. --></label>
+                    <p><!-- tekst --></p>
+                </postscript>
+            </div>
+            <div type="notes">
+                <note ref="#p1">24.388</note>
+            </div>
+        </body>
+    </text>
+</TEI>

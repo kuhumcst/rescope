@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:t="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc xml:lang="da">
+            <titleStmt>
+                <title>VH-til-JH-27-03-1966</title>
+                <author ref="#xx">Vibeke Hjelmslev</author>
+                <editor ref="#xx" role="commenting"><!-- kommentator --></editor>
+                <funder>Carlsbergfondet, Forskningsinfrastruktur, Infrastrukturalisme, 2018-2021</funder>
+
+                <respStmt>
+                    <resp>Transskription</resp>
+                    <persName ref="xx">Mads Nielsen</persName>
+                </respStmt>
+                <respStmt>
+                    <resp>Digitalisering</resp>
+                    <orgName>Digitaliseringsafdelingen, Det Kongelige Bibliotek</orgName>
+                </respStmt>
+            </titleStmt>
+
+            <publicationStmt>
+                <publisher>Henrik Jørgensen, Aarhus Universitet</publisher>
+                <pubPlace>CLARIN-DK</pubPlace>
+                <date when="2020"><!-- udfyldes når vi ved hvornår det bliver publiceret--></date>
+            </publicationStmt>
+
+            <sourceDesc>
+                <msDesc>
+                    <msIdentifier>
+                        <settlement ref="#København">København</settlement>
+                        <repository ref="xx">Det Kongelige Bibliotek</repository>
+                        <idno><!-- KB-id --></idno>
+                    </msIdentifier>
+                    <physDesc>
+                        <objectDesc form="letter">
+                            <supportDesc>
+                                <support>Gennemslag</support>
+                                <extent>
+                                    <note>1</note>
+                                </extent>
+                            </supportDesc>
+                        </objectDesc>
+                        <handDesc>
+                            <p>Maskinskrevet</p>
+                        </handDesc>
+                    </physDesc>
+                </msDesc>
+            </sourceDesc>
+        </fileDesc>
+
+        <profileDesc>
+            <correspDesc>
+                <correspAction type="sent">
+                    <persName ref="#xx">Vibeke Hjelmslev</persName>
+                    <placeName ref="#xx">Charlottenlund</placeName>
+                    <date>1966-03-27</date>
+                </correspAction>
+                <correspAction type="received">
+                    <persName ref="#xx">Jens Holt</persName>
+                    <placeName ref="#xx"><!-- sted --></placeName>
+                </correspAction>
+            </correspDesc>
+            <langUsage>
+                <language ident="da">da</language>
+            </langUsage>
+        </profileDesc>
+        <revisionDesc>
+            <listChange>
+                <change when="2019-10-30" who="#carolinehvboolsen">Testheader udfyldt til korrektur hos DHH</change>
+                <change when="2020-01-10" who="#dortehaltruphansen">Automatisk generering af TEI header</change>
+            </listChange>
+        </revisionDesc>
+
+    </teiHeader>
+    <facsimile>
+        <graphic xml:id="Kps24-383" mimeType="image/pdf" url="Kps24 (383).JPG
+"/>
+    </facsimile>
+
+    <text>
+        <body>
+            <div type="letter">
+                <pb n="1" facs="#Kps24-383"/>
+                <fw><!-- brevhoved/Hjelmslevs arkivnoter etc. --></fw>
+                <opener xml:id="xx">
+                    <dateline>
+                        <settlement ref="#Charlottenlund"><!-- sted --></settlement>
+                        <date when="1966-03-27"><!-- dato --></date>
+                    </dateline>
+                    <salute><persName type="receiver" ref="xx">Jens Holt <!-- modtager --></persName></salute>
+                </opener>
+                <p xml:id="p1">27. 3. <date when="1966">1966</date>.</p>
+                <p xml:id="p2">Kære <name type="pers" ref="#np60">Holt</name>,</p>
+                <p xml:id="p3">Mange tak for Deres brev. Det var hyggeligt, om det endelig skulde lykkes os at træffes herovre. Jeg kommer hjem fra paaskeferie <date when="--04-14">torsdag d. 14. april</date> og vil saa glæde mig til at se Dem og Grete <date when="--04-15">fredag d. 15. april</date> om eftermiddagen ved 3-tiden,</p>
+                <p xml:id="p4">Med hensyn til Deres spørgsmaal:</p>
+                <p xml:id="p5">ad 1. <name type="pers" ref="#np47">Louis</name> og <name type="pers" ref="#np145">Uldall</name> kom frem til opdagelse af parallelismen mellem indholdsbeskrivelse og udtryksbeskrivelse i <date when="1935">vinteren 1935</date>-36 i Aarhus.</p>
+                <p xml:id="p6">ad 2. Manuskriptet til "Sproget"forelaa i <date when="1942">foraaret 1942</date> og OSG udkom som bekendt i <date when="1943-11">november 1943</date>, saa de to værker maa være skrevet omtrent samtidig, dog vilde jeg tro "Sproget"først, men der er selvfølgelig en nøje forbindelse mellem de to.</p>
+                <p xml:id="p7">ad 3. Da Berlingske Forlag i <date when="1963">foraaret 1963</date> anmodede om at maatte udsende "Sproget", gennemsaa <name type="pers" ref="#np47">Louis</name> Manuskriptet, men rettede uendelig lidt deri, den svarer altså fuldstændig til den opfattelse, han havde i <date when="1963">1963</date></p>
+                <p xml:id="p8">Jeg har forelagt <name type="pers" ref="#np40">Eli Fischer Jørgensen</name> Deres spørgsmaal og hun slutter sig ganske til svarene.</p>
+                <p xml:id="p9">Mange hilsner til Dem og Grete og på gensyn d. <date when="--04-14">14. april</date>,</p>
+                <p xml:id="p10">Deres hengivne</p>
+                <p xml:id="p11" rend="handwritten">VH</p>
+                <closer xml:id="yy">
+                    <salute><persName type="sender" ref="xx">Vibeke Hjelmslev <!-- afsender --></persName></salute>
+                </closer>
+                <postscript>
+                    <label><!-- P.S. --></label>
+                    <p><!-- tekst --></p>
+                </postscript>
+            </div>
+            <div type="notes">
+                <note ref="#p1">24.383</note>
+            </div>
+        </body>
+    </text>
+</TEI>

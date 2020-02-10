@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:t="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc xml:lang="da">
+            <titleStmt>
+                <title>JH-til-LH-12-07-1956</title>
+                <author ref="#xx">Jens Holt</author>
+                <editor ref="#xx" role="commenting"><!-- kommentator --></editor>
+                <funder>Carlsbergfondet, Forskningsinfrastruktur, Infrastrukturalisme, 2018-2021</funder>
+
+                <respStmt>
+                    <resp>Transskription</resp>
+                    <persName ref="xx">Mads Nielsen</persName>
+                </respStmt>
+                <respStmt>
+                    <resp>Digitalisering</resp>
+                    <orgName>Digitaliseringsafdelingen, Det Kongelige Bibliotek</orgName>
+                </respStmt>
+            </titleStmt>
+
+            <publicationStmt>
+                <publisher>Henrik Jørgensen, Aarhus Universitet</publisher>
+                <pubPlace>CLARIN-DK</pubPlace>
+                <date when="2020"><!-- udfyldes når vi ved hvornår det bliver publiceret--></date>
+            </publicationStmt>
+
+            <sourceDesc>
+                <msDesc>
+                    <msIdentifier>
+                        <settlement ref="#København">København</settlement>
+                        <repository ref="xx">Det Kongelige Bibliotek</repository>
+                        <idno><!-- KB-id --></idno>
+                    </msIdentifier>
+                    <physDesc>
+                        <objectDesc form="letter">
+                            <supportDesc>
+                                <support>Gennemslag</support>
+                                <extent>
+                                    <note>1</note>
+                                </extent>
+                            </supportDesc>
+                        </objectDesc>
+                        <handDesc>
+                            <p>Maskinskrevet</p>
+                        </handDesc>
+                    </physDesc>
+                </msDesc>
+            </sourceDesc>
+        </fileDesc>
+
+        <profileDesc>
+            <correspDesc>
+                <correspAction type="sent">
+                    <persName ref="#xx">Jens Holt</persName>
+                    <placeName ref="#xx">Århus</placeName>
+                    <date>1956-07-12</date>
+                </correspAction>
+                <correspAction type="received">
+                    <persName ref="#xx">Louis Hjelmslev</persName>
+                    <placeName ref="#xx"><!-- sted --></placeName>
+                </correspAction>
+            </correspDesc>
+            <langUsage>
+                <language ident="da">da</language>
+            </langUsage>
+        </profileDesc>
+        <revisionDesc>
+            <listChange>
+                <change when="2019-10-30" who="#carolinehvboolsen">Testheader udfyldt til korrektur hos DHH</change>
+                <change when="2020-01-10" who="#dortehaltruphansen">Automatisk generering af TEI header</change>
+            </listChange>
+        </revisionDesc>
+
+    </teiHeader>
+    <facsimile>
+        <graphic xml:id="Kps24-379" mimeType="image/pdf" url="Kps24 (379).JPG
+"/>
+    </facsimile>
+
+    <text>
+        <body>
+            <div type="letter">
+                <pb n="1" facs="#Kps24-379"/>
+                <fw><!-- brevhoved/Hjelmslevs arkivnoter etc. --></fw>
+                <opener xml:id="xx">
+                    <dateline>
+                        <settlement ref="#Århus"><!-- sted --></settlement>
+                        <date when="1956-07-12"><!-- dato --></date>
+                    </dateline>
+                    <salute><persName type="receiver" ref="xx">Louis Hjelmslev <!-- modtager --></persName></salute>
+                </opener>
+                <p xml:id="p1"><name type="place" ref="#npl1">AARHUS</name> D. <date when="1956-07-12">12/7 1956</date></p>
+                <p xml:id="p2">Kære <name type="pers" ref="#np56">Hjelmslev</name>,</p>
+                <p xml:id="p3">Undskyld jeg måske forstyrrer dig i din ferie! Men det er vist ualmindelig længe siden du har hørt fra mig. Jeg har da den særdeles glædelige nyhed, at jeg nu er blevet helt rask, både mht. nerver og legemlige kræfter. Det sidste skub fik jeg ved et meget anstrengende men særdeles udbytterigt møde i <name type="place" ref="#npl1257">Paris</name> ( <name type="org" ref="#norg1">Sixième rencontre assyriologique</name>), hvorfra jeg kom hjem <date when="---04">4. ds.</date> Bevis for helbredelsen efter faktisk fire års sygdom: jeg har kunnet gøre propert havearbejde og kalket kælder som rekreation oven på det meget intense møde, hvor vi faktisk hver dag fortsatte med private sammenkomster helt til midnat. Nu har jeg altså hvilet ud c. en uge, så jeg kan begynde at tage fat igen. Min arbejdsplan for de kommende år med hensyn til hittitisk ligger nu så temmelig klar.</p>
+                <p xml:id="p4">Jeg skriver til dig, foruden av nævnte grund, for at gøre dig opmærksom på at der nåste sommer er <name type="org" ref="#norg5">orientalistkongres</name> i <name type="place" ref="#npl1170">München</name>, som jeg under hensyn til alt det der foregår i det forasiatiske område, meget gerne skulde ned til. Derfor beder jeg dig om at forhindre at der sker overlapping mellem denne kongres og <name type="org" ref="#norg6">lingvistkongressen</name> i <name type="place" ref="#npl1242">Oslo</name>, hvor jeg lige så gerne skulde være til stede.</p>
+                <p xml:id="p5">Endelig, er jeg nu oplagt til at skrive anmeldelserne av <name type="pers" ref="#np32">Devoto</name> og Lejeune til AL., men jeg véd at Lejeunes <name type="publ" ref="#npub3">Traité de phonétique grecque</name> er kommet i 2.éd., hvilket er vigtigt mht. hans position over for Grammont posthume værk. Og mon ikke også <name type="pers" ref="#np32">Devoto</name> <name type="publ" ref="#npub4">Storia della lingua di Roma</name> er kommet i en senere udgave? Ved at anmelde de senere editioner kommer vi over det lict pinlige punkt med den lange tid der er gået, et forhold som jeg jo ikke ganske har været herre over. Når jeg har de nye udgaver, tager jeg fat.</p>
+                <p xml:id="p6">Forinden jeg tager fat på det hær nævnte, skal jeg skrive en anm. av <name type="publ" ref="#npub1">Corolla linguistica</name> xxx (Sommers festskrift) til <name type="publ" ref="#npub2">Bibliotheca Orientalis</name>. </p>
+                <p xml:id="p7">Håber alt står vel til hos jer. Hær har vi det alle godt. Grete er endnu ikke kommet hjem fra ferie i <name type="place" ref="#npl460">Svendborg</name>, men i næste uge skal hun sammen med sin moder til <name type="place" ref="#npl2283">Mosel</name>. </p>
+                <p xml:id="p8">Mange hilsener til jer begge</p>
+                <p xml:id="p9">Din hengivne</p>
+                <p xml:id="p10" rend="handwritten"><name type="pers" ref="#np60">Jens</name> Holt</p>                                <p xml:id="p12" rend="handwritten"><name type="pers" ref="#np60">Holt</name>, Jens</p>
+                <closer xml:id="yy">
+                    <salute><persName type="sender" ref="xx">Jens Holt <!-- afsender --></persName></salute>
+                </closer>
+                <postscript>
+                    <label><!-- P.S. --></label>
+                    <p><!-- tekst --></p>
+                </postscript>
+            </div>
+            <div type="notes">
+                <note ref="#p1">24.379</note>
+            </div>
+            <div type="notes">
+                <note ref="#p4">følgende paragraf er markeret med blå streg og 18/56 i højre margin</note>
+            </div>
+            <div type="notes">
+                <note ref="#p5">følgende paragraf er markeret med blå streg og 22/37 i højre margin</note>
+            </div>
+        </body>
+    </text>
+</TEI>

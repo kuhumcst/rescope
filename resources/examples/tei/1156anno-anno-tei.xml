@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:t="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc xml:lang="da">
+            <titleStmt>
+                <title>VH-til-JH-15-10-1965</title>
+                <author ref="#xx">Vibeke Hjelmslev</author>
+                <editor ref="#xx" role="commenting"><!-- kommentator --></editor>
+                <funder>Carlsbergfondet, Forskningsinfrastruktur, Infrastrukturalisme, 2018-2021</funder>
+
+                <respStmt>
+                    <resp>Transskription</resp>
+                    <persName ref="xx">Mads Nielsen</persName>
+                </respStmt>
+                <respStmt>
+                    <resp>Digitalisering</resp>
+                    <orgName>Digitaliseringsafdelingen, Det Kongelige Bibliotek</orgName>
+                </respStmt>
+            </titleStmt>
+
+            <publicationStmt>
+                <publisher>Henrik Jørgensen, Aarhus Universitet</publisher>
+                <pubPlace>CLARIN-DK</pubPlace>
+                <date when="2020"><!-- udfyldes når vi ved hvornår det bliver publiceret--></date>
+            </publicationStmt>
+
+            <sourceDesc>
+                <msDesc>
+                    <msIdentifier>
+                        <settlement ref="#København">København</settlement>
+                        <repository ref="xx">Det Kongelige Bibliotek</repository>
+                        <idno><!-- KB-id --></idno>
+                    </msIdentifier>
+                    <physDesc>
+                        <objectDesc form="letter">
+                            <supportDesc>
+                                <support>Gennemslag</support>
+                                <extent>
+                                    <note>1</note>
+                                </extent>
+                            </supportDesc>
+                        </objectDesc>
+                        <handDesc>
+                            <p>Maskinskrevet</p>
+                        </handDesc>
+                    </physDesc>
+                </msDesc>
+            </sourceDesc>
+        </fileDesc>
+
+        <profileDesc>
+            <correspDesc>
+                <correspAction type="sent">
+                    <persName ref="#xx">Vibeke Hjelmslev</persName>
+                    <placeName ref="#xx">Charlottenlund</placeName>
+                    <date>1965-10-15</date>
+                </correspAction>
+                <correspAction type="received">
+                    <persName ref="#xx">Jens Holt</persName>
+                    <placeName ref="#xx"><!-- sted --></placeName>
+                </correspAction>
+            </correspDesc>
+            <langUsage>
+                <language ident="da">da</language>
+            </langUsage>
+        </profileDesc>
+        <revisionDesc>
+            <listChange>
+                <change when="2019-10-30" who="#carolinehvboolsen">Testheader udfyldt til korrektur hos DHH</change>
+                <change when="2020-01-10" who="#dortehaltruphansen">Automatisk generering af TEI header</change>
+            </listChange>
+        </revisionDesc>
+
+    </teiHeader>
+    <facsimile>
+        <graphic xml:id="Kps24-384" mimeType="image/pdf" url="Kps24 (384).JPG
+"/>
+    </facsimile>
+
+    <text>
+        <body>
+            <div type="letter">
+                <pb n="1" facs="#Kps24-384"/>
+                <fw><!-- brevhoved/Hjelmslevs arkivnoter etc. --></fw>
+                <opener xml:id="xx">
+                    <dateline>
+                        <settlement ref="#Charlottenlund"><!-- sted --></settlement>
+                        <date when="1965-10-15"><!-- dato --></date>
+                    </dateline>
+                    <salute><persName type="receiver" ref="xx">Jens Holt <!-- modtager --></persName></salute>
+                </opener>
+                <p xml:id="p1">Ordruphøjvej 40,</p>
+                <p xml:id="p2"><name type="place" ref="#npl68">Charlottenlund</name>,</p>
+                <p xml:id="p3"><date when="1965-10-15">15. oktober 1965</date>.</p>
+                                <p xml:id="p5">Kære <name type="pers" ref="#np60">Holt</name>,</p>
+                <p xml:id="p6">Mange tak for Deres smukke mindetale, og for særtrykket med den vemodige dedikation. Med hensyn til forelæsningen maa De endelig ikke gøre Dem nogen ulejlighed for at faa en afskrift, kontorhjælp vokser jo ikke på træer i vore dage!</p>
+                <p xml:id="p7">Desværre er jeg ikke i byen i næste uge, jeg er bortrejst fra <date when="2000">18-26. ds.</date>, forhåbentlig lykkes det senere.</p>
+                <p xml:id="p8">Mange venlige hilsner til Dem og Grete</p>
+                <p xml:id="p9">Deres hengivne</p>
+                <p xml:id="p10" rend="handwritten">VH</p>
+                <closer xml:id="yy">
+                    <salute><persName type="sender" ref="xx">Vibeke Hjelmslev <!-- afsender --></persName></salute>
+                </closer>
+                <postscript>
+                    <label><!-- P.S. --></label>
+                    <p><!-- tekst --></p>
+                </postscript>
+            </div>
+            <div type="notes">
+                <note ref="#p1">24.384</note>
+            </div>
+        </body>
+    </text>
+</TEI>

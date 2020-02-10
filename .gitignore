@@ -243,3 +243,4 @@ temp/
 .shadow-cljs
 facsimile.iml
 package-lock.json
+*.DS_store

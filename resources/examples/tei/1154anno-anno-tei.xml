@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:t="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc xml:lang="da">
+            <titleStmt>
+                <title>JH-til-VH-24-03-1966</title>
+                <author ref="#xx">Jens Holt</author>
+                <editor ref="#xx" role="commenting"><!-- kommentator --></editor>
+                <funder>Carlsbergfondet, Forskningsinfrastruktur, Infrastrukturalisme, 2018-2021</funder>
+
+                <respStmt>
+                    <resp>Transskription</resp>
+                    <persName ref="xx">Mads Nielsen</persName>
+                </respStmt>
+                <respStmt>
+                    <resp>Digitalisering</resp>
+                    <orgName>Digitaliseringsafdelingen, Det Kongelige Bibliotek</orgName>
+                </respStmt>
+            </titleStmt>
+
+            <publicationStmt>
+                <publisher>Henrik Jørgensen, Aarhus Universitet</publisher>
+                <pubPlace>CLARIN-DK</pubPlace>
+                <date when="2020"><!-- udfyldes når vi ved hvornår det bliver publiceret--></date>
+            </publicationStmt>
+
+            <sourceDesc>
+                <msDesc>
+                    <msIdentifier>
+                        <settlement ref="#København">København</settlement>
+                        <repository ref="xx">Det Kongelige Bibliotek</repository>
+                        <idno><!-- KB-id --></idno>
+                    </msIdentifier>
+                    <physDesc>
+                        <objectDesc form="letter">
+                            <supportDesc>
+                                <support>Gennemslag</support>
+                                <extent>
+                                    <note>1</note>
+                                </extent>
+                            </supportDesc>
+                        </objectDesc>
+                        <handDesc>
+                            <p>Maskinskrevet</p>
+                        </handDesc>
+                    </physDesc>
+                </msDesc>
+            </sourceDesc>
+        </fileDesc>
+
+        <profileDesc>
+            <correspDesc>
+                <correspAction type="sent">
+                    <persName ref="#xx">Jens Holt</persName>
+                    <placeName ref="#xx">Århus</placeName>
+                    <date>1966-03-24</date>
+                </correspAction>
+                <correspAction type="received">
+                    <persName ref="#xx">Vibeke Hjelmslev</persName>
+                    <placeName ref="#xx"><!-- sted --></placeName>
+                </correspAction>
+            </correspDesc>
+            <langUsage>
+                <language ident="da">da</language>
+            </langUsage>
+        </profileDesc>
+        <revisionDesc>
+            <listChange>
+                <change when="2019-10-30" who="#carolinehvboolsen">Testheader udfyldt til korrektur hos DHH</change>
+                <change when="2020-01-10" who="#dortehaltruphansen">Automatisk generering af TEI header</change>
+            </listChange>
+        </revisionDesc>
+
+    </teiHeader>
+    <facsimile>
+        <graphic xml:id="Kps24-382" mimeType="image/pdf" url="Kps24 (382).JPG
+"/>
+    </facsimile>
+
+    <text>
+        <body>
+            <div type="letter">
+                <pb n="1" facs="#Kps24-382"/>
+                <fw><!-- brevhoved/Hjelmslevs arkivnoter etc. --></fw>
+                <opener xml:id="xx">
+                    <dateline>
+                        <settlement ref="#Århus"><!-- sted --></settlement>
+                        <date when="1966-03-24"><!-- dato --></date>
+                    </dateline>
+                    <salute><persName type="receiver" ref="xx">Vibeke Hjelmslev <!-- modtager --></persName></salute>
+                </opener>
+                <p xml:id="p1"><name type="place" ref="#npl1">AARHUS</name> D. <date when="1966-03-24">24/3 1966</date></p>
+                <p xml:id="p2">Kære <name type="pers" ref="#np57">Vibeke Hjelmslev</name>,</p>
+                <p xml:id="p3">De har ikke hørt fra os siden jul. Jeg kunde nemlig ikke sige noget om hvornår jeg kunde komme til <name type="place" ref="#npl283">København</name> for at tale med Dem om de omtalte papirer. Men nu har jeg et forslag at gøre Dem. Min kone og jeg rejser den <date when="--04-17">17. april</date> til <name type="place" ref="#npl2286">Rhodos</name>, og passerer altså <name type="place" ref="#npl283">København</name>. Kunde det så måske passe dem at se os <date when="---15">fredag den 15.</date> om eftermiddagen?</p>
+                <p xml:id="p4">For tiden skriver jeg på en mindeartikel til <name type="org" ref="#norg3">KRATYLOS</name> om <name type="pers" ref="#np47">Louis</name>. De vilde måske være så elskværdig at give mig en oplysning, som jeg skal bruge dertil, nemlig om De husker noget om hvornår <name type="pers" ref="#np47">Louis</name> og <name type="pers" ref="#np145">Uldall</name> kom frem til opdagelsen av parallelismen mellem indholdsbeskrivelse og udtryksbeskrivelse. Vi regner jo med at det er sket i <date when="1935">1935</date> under ivrige samtaler på <name type="pers" ref="#np138">Knud</name> Rasmussensvej i <name type="place" ref="#npl1">Århus</name>. For det er jo på det tidspunkt at glossematikken bliver til, og denne erkendelse jo bag meddelelsen på 2. fonetikerkongres i London <date when="1935">1935</date>, og bag den meget grundlæggende meddelelse fra <name type="org" ref="#norg6">Lingvistkongressen</name> i Kbh. <date when="1936">1936</date>, Essai d'une théorie des morphèmes. </p>
+                <p xml:id="p5">Endvidere: <name type="pers" ref="#np40">Eli Fischer-Jørgensen</name> meddeler i sin mindeartikel til ALH at manuskriptet til "Sproget"blev skrevet i slutningen av <date when="1941">1941</date>; og i den forbindelse vilde jeg meget gerne vide, hvordan udarbejdelsen av det manuskript forholder sig til udarbejdelsen av OSG, som jo udkom <date when="1943">1943</date>.</p>
+                <p xml:id="p6">     Hvis det er muligt, vilde jeg gerne have disse oplysninger med; og mit manuskript skulde jeg gerne have færdigt før påsken.</p>
+                <p xml:id="p7">Efter det skal jeg skrive til ALH en anmeldelse av "Sproget", et arbejde som jeg nærmest glæder mig til at gøre, selvom det ikke bliver ligetil, ikke mindst på grund av det lange åremål mellem udarbejdelsen og offentliggørelsen. Siden <name type="pers" ref="#np47">Louis</name> lod bogen udkomme, går jeg naturligvis ud fra at bogen svarer til den opfattelse han havde i <date when="1963">1963</date>.</p>
+                <p xml:id="p8">Denne gang håber jeg så at det lykkes at mødes  -og så kan De endda også få Grete at se.</p>
+                <p xml:id="p9">Mange venlige hilsener  -også fra Grete</p>
+                <p xml:id="p10">Deres hengivne</p>
+                <p xml:id="p11" rend="handwritten"><name type="pers" ref="#np60">Jens</name> Holt</p>                <p xml:id="p12">     Skriv til min private adresse.  </p>
+
+                <closer xml:id="yy">
+                    <salute><persName type="sender" ref="xx">Jens Holt <!-- afsender --></persName></salute>
+                </closer>
+                <postscript>
+                    <label><!-- P.S. --></label>
+                    <p><!-- tekst --></p>
+                </postscript>
+            </div>
+            <div type="notes">
+                <note ref="#p1">24.382</note>
+            </div>
+            <div type="notes">
+                <note ref="#p4">modtageren har tilføjet vinteren '35-'36 i venstre margin af følgende paragraf</note>
+            </div>
+            <div type="notes">
+                <note ref="#p5">modtageren har tilføjet " Sproget"skrevet først, men nøje forb. ml. de 2 i venstre margin af følgende paragraf</note>
+            </div>
+            <div type="notes">
+                <note ref="#p7">modtageren har tilføjet ja. L. gennemlæste ms. i foraaret '63 i venstre margin af følgende paragraf</note>
+            </div>
+        </body>
+    </text>
+</TEI>
