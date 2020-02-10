@@ -2,15 +2,9 @@
   "Parse XML as hiccup and select elements from the parsed representation."
   (:require [clojure.string :as str]
             [clojure.zip :as zip]
-            [clojure.set :as set]
             [hickory.core :as hickory]
             [hickory.zip :as hzip]
             [kuhumcst.facsimile.util :as util]))
-
-(def attr-conversions
-  "Mapping from common XML attributes to their HTML counterparts."
-  {:xml:id   :id
-   :xml:lang :lang})
 
 (defn- trim-str
   "Remove any blank strings from a string node `loc`."
@@ -36,10 +30,11 @@
     loc))
 
 (defn- convert-attr
-  "Convert common XML attributes into their direct HTML counterparts."
+  "Convert all XML attributes into data-* attributes."
   [[[tag attr & content :as node] _ :as loc]]
   (if (map? attr)
-    (zip/replace loc (assoc node 1 (set/rename-keys attr attr-conversions)))
+    (zip/replace loc (assoc node 1 (into {} (for [[k v] attr]
+                                              [(keyword (util/data-* k)) v]))))
     loc))
 
 (defn- add-prefix

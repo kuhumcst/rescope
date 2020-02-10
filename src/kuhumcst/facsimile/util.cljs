@@ -1,7 +1,8 @@
-(ns kuhumcst.facsimile.util)
+(ns kuhumcst.facsimile.util
+  (:require [clojure.string :as str]))
 
 (defn prefixed
-  "Prefix an HTML element tag, creating a valid custom HTML element name."
+  "Add a `prefix` to an HTML `tag`, creating a valid custom HTML element name."
   [prefix tag]
   (let [reserved-tags #{"annotation-xml"
                         "color-profile"
@@ -15,3 +16,11 @@
     (if (contains? reserved-tags prefixed-tag)
       (str prefixed-tag "-x")
       prefixed-tag)))
+
+(defn data-*
+  "Convert an XML attribute `k` into a data-* attribute."
+  [k]
+  (as-> k $
+        (name $)
+        (str/replace $ ":" "-")
+        (str "data-" $)))

@@ -17,7 +17,7 @@
   (let [initial-hiccup (parse/xml->hiccup tei-example)
         root-tag       (name (first initial-hiccup))
         hiccup         (parse/preprocess initial-hiccup)
-        css            (style/prefix-css root-tag css-example)
+        css            (style/patch-css root-tag css-example)
         teiheader      (parse/select hiccup (parse/element :tei-teiheader))
         facsimile      (parse/select hiccup (parse/element :tei-facsimile))
         text           (parse/select hiccup (parse/element :tei-text))
