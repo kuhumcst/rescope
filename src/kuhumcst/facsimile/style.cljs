@@ -28,6 +28,9 @@
           (flatten $)
           (apply str $))))
 
+;; TODO: support attr(...) CSS function
+;; https://developer.mozilla.org/en-US/docs/Web/CSS/attr
+;; https://css-tricks.com/css-attr-function-got-nothin-custom-properties/
 (defn convert-to-data-*
   "More Perl-wannabe, garbage code for prefixing data-* to attribute selectors
   in a piece of `css`."

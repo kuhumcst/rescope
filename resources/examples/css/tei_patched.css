@@ -1,14 +1,14 @@
-/* Hide all TEI metadata. */
-teiHeader, facsimile {
+
+tei-teiHeader, tei-facsimile {
     display: none;
 }
 
-div {
+tei-div {
     display: block;
 }
 
-/* HTML paragraph default styles. */
-p {
+
+tei-p {
     display: block;
     margin-top: 1em;
     margin-bottom: 1em;
@@ -16,6 +16,6 @@ p {
     margin-right: 0;
 }
 
-[rend~=handwritten] {
+[data-rend~=handwritten] {
     font-family: cursive;
 }

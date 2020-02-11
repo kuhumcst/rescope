@@ -39,9 +39,17 @@ Development of the component is done using the live-reloading capabilities of sh
 shadow-cljs watch app
 ```
 
-This will start a basic web server serving the `:app` build as specified in the `shadow-cljs.edn` file.
+This will start a basic web server at `localhost:8000` serving the `:app` build as specified in the `shadow-cljs.edn` file.
 
-I use the Clojure CLI integration in Cursive to calculate a classpath (clicking `refresh` when I'm reminded to after editing the `deps.edn` file), but I'm told something like this command is being executed behind the scenes:
+It's possible to execute unit tests while developing by also specifying the `:unit-tests` build:
+
+```
+shadow-cljs watch app unit-tests
+```
+
+This will make test output available at `localhost:8001`. It's quite convenient to keep a separate browser tab open just for this. The favicon will be coloured green or red depending on the state of the assertions.
+
+Personally, I use the Clojure CLI integration in Cursive to calculate a classpath and download dependencies. Something like this command is being executed behind the scenes:
 
 ```
 clj -A:shadow-cljs -Spath
