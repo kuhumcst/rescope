@@ -7,6 +7,7 @@
   [css]
   (str/replace css #"/\*.*\*/" ""))
 
+;; TODO: support @import, @media, etc. special rules
 (defn prefix-element-selectors
   "Super hairy, write-only code for adding a `prefix` to all element selectors
   in a piece of `css`."
@@ -28,6 +29,9 @@
           (flatten $)
           (apply str $))))
 
+;; TODO: support attr(...) CSS function
+;; https://developer.mozilla.org/en-US/docs/Web/CSS/attr
+;; https://css-tricks.com/css-attr-function-got-nothin-custom-properties/
 (defn convert-to-data-*
   "More Perl-wannabe, garbage code for prefixing data-* to attribute selectors
   in a piece of `css`."
@@ -49,6 +53,12 @@
           (flatten $)
           (apply str $))))
 
+(defn trim-newlines
+  "Remove superfluous newlines."
+  [css]
+  (-> (str/replace css #"\n\n+" "\n\n")
+      (str/triml)))
+
 (defn patch-css
   "Patch a piece of `css` written for the original XML structure so that it fits
   into the converted structure of the embedded XML. Will remove comments, prefix
@@ -56,4 +66,5 @@
   [prefix css]
   (->> (remove-comments css)
        (prefix-element-selectors prefix)
-       (convert-to-data-*)))
+       (convert-to-data-*)
+       (trim-newlines)))

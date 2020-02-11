@@ -1,21 +1,17 @@
-/* Hide all TEI metadata. */
-teiHeader, facsimile, [type=notes] {
+tei-teiHeader, tei-facsimile, [data-type=notes] {
     display: none;
 }
 
-/* HTML div. */
-div {
+tei-div {
     display: block;
 }
 
-/* HTML address. */
-addrLine {
+tei-addrLine {
   display: block;
   font-style: italic;
 }
 
-/* HTML p. */
-p, opener {
+tei-p, tei-opener {
     display: block;
     margin-top: 1em;
     margin-bottom: 1em;
@@ -23,11 +19,10 @@ p, opener {
     margin-right: 0;
 }
 
-/* Assuming letters are written on a typewriter. */
-[type=letter] {
+[data-type=letter] {
     font-family: monospace;
 }
 
-[rend~=handwritten] {
+[data-rend~=handwritten] {
     font-family: cursive;
 }

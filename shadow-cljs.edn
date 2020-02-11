@@ -1,8 +1,12 @@
-{:deps     {:aliases [:shadow-cljs]}
+{:deps     {:aliases [:shadow-cljs :testing]}
  :dev-http {8000 "classpath:public"}
  :nrepl    {:port    9000
             :init-ns dev}
- :builds   {:app {:target     :browser
-                  :output-dir "resources/public/js/compiled"
-                  :asset-path "js"
-                  :modules    {:main {:init-fn user/start-dev}}}}}
+ :builds   {:app        {:target     :browser
+                         :output-dir "resources/public/js/compiled"
+                         :asset-path "js"
+                         :modules    {:main {:init-fn user/start-dev}}}
+            :unit-tests {:target   :browser-test
+                         :test-dir "resources/public/js/test"
+                         :devtools {:http-port 8001
+                                    :http-root "resources/public/js/test"}}}}
