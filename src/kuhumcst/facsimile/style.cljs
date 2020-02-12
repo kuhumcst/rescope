@@ -53,10 +53,11 @@
           (flatten $)
           (apply str $))))
 
-(defn trim-newlines
+(defn trim-blank-space
   "Remove superfluous newlines."
   [css]
-  (-> (str/replace css #"\n\n+" "\n\n")
+  (-> (str/replace css #" +\n" "\n")                        ; line-end spaces
+      (str/replace #"\n\n+" "\n\n")                         ; multiple newlines
       (str/triml)))
 
 (defn patch-css
@@ -67,4 +68,4 @@
   (->> (remove-comments css)
        (prefix-element-selectors prefix)
        (convert-to-data-*)
-       (trim-newlines)))
+       (trim-blank-space)))

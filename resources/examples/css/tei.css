@@ -15,7 +15,7 @@ addrLine {
 }
 
 /* HTML p. */
-p, opener {
+p, opener, closer, postscript {
     display: block;
     margin-top: 1em;
     margin-bottom: 1em;
@@ -34,11 +34,58 @@ pb:not(:first-of-type) {
   border-width: 1px;
 }
 
+/* Marking incorrect spelling inline. */
+choice > sic::after {
+    content: " [sic] ";
+    font-style: italic;
+}
+
+/* Removing corrected spelling from text. */
+choice > corr {
+    display: none;
+}
+
+/* Unclear text is clearly marked with a red underline. */
+unclear {
+    text-decoration: red wavy underline;
+}
+
+/* Gaps of missing content. */
+gap {
+    display: inline-block;
+    width: 10em; /* TODO: need a programmatic solution for the exact length. */
+    height: 1em;
+    background: lightgrey;
+}
+
+gap:not(:first-child) {
+    margin-left: 1em;
+}
+
+gap:not(:last-child) {
+    margin-right: 1em;
+}
+
+/* Additions are also distinguished from normal text. */
+add {
+    font-weight: bold;
+    font-style: italic;
+}
+
+add[place=above] {
+    vertical-align: super;
+    font-size: 70%;
+}
+
 /* Assuming letters are written on a typewriter. */
 [type=letter] {
     font-family: monospace;
 }
 
-[rend~=handwritten] {
+[rend=handwritten] {
     font-family: cursive;
+}
+
+[rend=underline] {
+    text-decoration: underline;
 }

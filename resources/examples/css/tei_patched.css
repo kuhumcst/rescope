@@ -11,7 +11,7 @@ tei-addrLine {
   font-style: italic;
 }
 
-tei-p, tei-opener {
+tei-p, tei-opener, tei-closer, tei-postscript {
     display: block;
     margin-top: 1em;
     margin-bottom: 1em;
@@ -29,10 +29,52 @@ tei-pb:not(:first-of-type) {
   border-width: 1px;
 }
 
+tei-choice > tei-sic::after {
+    content: " [sic] ";
+    font-style: italic;
+}
+
+tei-choice > tei-corr {
+    display: none;
+}
+
+tei-unclear {
+    text-decoration: red wavy underline;
+}
+
+tei-gap {
+    display: inline-block;
+    width: 10em;
+    height: 1em;
+    background: lightgrey;
+}
+
+tei-gap:not(:first-child) {
+    margin-left: 1em;
+}
+
+tei-gap:not(:last-child) {
+    margin-right: 1em;
+}
+
+tei-add {
+    font-weight: bold;
+    font-style: italic;
+}
+
+tei-add[data-place=above] {
+    vertical-align: super;
+    font-size: 70%;
+}
+
 [data-type=letter] {
     font-family: monospace;
 }
 
-[data-rend~=handwritten] {
+[data-rend=handwritten] {
     font-family: cursive;
+}
+
+[data-rend=underline] {
+    text-decoration: underline;
 }
