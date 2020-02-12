@@ -23,6 +23,17 @@ p, opener {
     margin-right: 0;
 }
 
+/* HTML hr. */
+pb:not(:first-of-type) {
+  display: block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-left: auto;
+  margin-right: auto;
+  border-style: inset;
+  border-width: 1px;
+}
+
 /* Assuming letters are written on a typewriter. */
 [type=letter] {
     font-family: monospace;
