@@ -2,6 +2,7 @@
   "Parse XML as hiccup and select elements from the parsed representation."
   (:require [clojure.string :as str]
             [clojure.zip :as zip]
+            [clojure.set :as set]
             [hickory.core :as hickory]
             [hickory.zip :as hzip]
             [kuhumcst.facsimile.util :as util]))
@@ -29,12 +30,23 @@
     (zip/replace loc (into [tag] content))
     loc))
 
-(defn- convert-attr
-  "Convert all XML attributes into data-* attributes."
+(defn- as-data-*
+  [attr]
+  (into {} (for [[k v] attr]
+             [(keyword (util/data-* k)) v])))
+
+(defn- attr->data-attr
+  "Convert all attributes into data-* attributes."
   [[[tag attr & content :as node] _ :as loc]]
   (if (map? attr)
-    (zip/replace loc (assoc node 1 (into {} (for [[k v] attr]
-                                              [(keyword (util/data-* k)) v]))))
+    (zip/replace loc (assoc node 1 (as-data-* attr)))
+    loc))
+
+(defn remame-attr
+  "Rename attr according to `kmap`."
+  [kmap [[tag attr & content :as node] _ :as loc]]
+  (if (map? attr)
+    (zip/replace loc (assoc node 1 (set/rename-keys attr (as-data-* kmap))))
     loc))
 
 (defn- add-prefix
@@ -45,18 +57,22 @@
         new-tag (keyword (util/prefixed prefix tag))]
     (zip/replace loc (apply vector new-tag (rest node)))))
 
-(defn- preprocess-fn
-  "Create an fn for preprocessing an XML-derived hiccup zipper `loc` based on a
-  `prefix-tag`. The hiccup structure is trimmed and the prefix is applied to all
-  elements."
-  [prefix-tag]
+(defn- patch-fn
+  "Create an fn for processing an XML-derived hiccup zipper `loc` based on a
+  `prefix` and an `attr-kmap`.
+
+  The hiccup structure is trimmed and the prefix is applied to all element tags
+  in the tree. Attributes are renamed according to attr-kmap or converted into
+  the data-* format."
+  [prefix attr-kmap]
   (fn [[node _ :as loc]]
     (cond
       (string? node) (->> (trim-str loc)
                           (remove-comment))
       (vector? node) (->> (trim-vec loc)
-                          (convert-attr)
-                          (add-prefix (name prefix-tag))))))
+                          (attr->data-attr)
+                          (remame-attr attr-kmap)
+                          (add-prefix prefix)))))
 
 (defn element
   "Create an element selector predicate for element `tags`. Will select elements
@@ -117,10 +133,12 @@
       (.-firstChild)))
 
 (defn xml->hiccup
-  "Convert an `xml` string into a hiccup representation."
+  "Naïvely convert an `xml` string into an initial hiccup representation."
   [xml]
   (-> xml dom-parse hickory/as-hiccup))
 
-(defn preprocess
-  [hiccup]
-  (transform (preprocess-fn (first hiccup)) hiccup))
+(defn patch-hiccup
+  "Clean the initial `hiccup` structure, apply the tag `prefix`, and remap the
+  initial attrs according to `attr-kmap` (unmentioned attrs becoming data-*)."
+  [hiccup prefix attr-kmap]
+  (transform (patch-fn prefix attr-kmap) hiccup))

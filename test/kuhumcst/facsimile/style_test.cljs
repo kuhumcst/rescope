@@ -20,7 +20,7 @@
       (recur (str shared c1) r1 r2))))
 
 (deftest patch-css
-  (let [actual   (style/patch-css "tei" css-example)
+  (let [actual   (style/patch-css css-example "tei")
         expected css-patched-example]
     #_(cljs.pprint/pprint (str-divergence actual expected))
     (is (= actual expected))))

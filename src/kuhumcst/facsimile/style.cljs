@@ -62,9 +62,9 @@
 
 (defn patch-css
   "Patch a piece of `css` written for the original XML structure so that it fits
-  into the converted structure of the embedded XML. Will remove comments, prefix
-  element selectors, and convert attribute selectors to the data-* style."
-  [prefix css]
+  into the converted structure of the embedded XML. Will remove comments, add
+  `prefix` to element selectors, and convert attribute selectors to data-*."
+  [css prefix]
   (->> (remove-comments css)
        (prefix-element-selectors prefix)
        (convert-to-data-*)

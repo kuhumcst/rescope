@@ -12,12 +12,17 @@
 (def css-example
   (resource/inline "examples/css/tei.css"))
 
+(def attr-kmap
+  {:xml:lang :lang
+   :xml:id   :id})
+
+;; TODO: shadow-dom content for tree-like structures, e.g. list and item
 (defn app
   []
   (let [initial-hiccup (parse/xml->hiccup tei-example)
-        root-tag       (name (first initial-hiccup))
-        hiccup         (parse/preprocess initial-hiccup)
-        css            (style/patch-css root-tag css-example)
+        prefix         (name (first initial-hiccup))
+        hiccup         (parse/patch-hiccup initial-hiccup prefix attr-kmap)
+        css            (style/patch-css css-example prefix)
         teiheader      (parse/select hiccup (parse/element :tei-teiheader))
         facsimile      (parse/select hiccup (parse/element :tei-facsimile))
         text           (parse/select hiccup (parse/element :tei-text))
