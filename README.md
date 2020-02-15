@@ -3,7 +3,9 @@ Facsimile
 
 A facsimile viewer implemented as a [reagent](https://github.com/reagent-project/reagent) component utilising [custom HTML components](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) to embed XML directly into an HTML page.
 
-The main purpose is to be able to display [TEI-flavoured XML](https://tei-c.org/) next to a PDF/image viewer, but in fact any valid XML can be embedded.
+The XML is converted into Clojure's ubiquitous hiccup format and each element patched to become a valid custom HTML element. The content is then placed inside a [shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) which allows for CSS to apply to it in a scoped manner. The CSS is automatically patched to eccho the renaming that allows the XML to moonlight as HTML custom elements. This means regular CSS can be written directly for the XML even though it's embedded in an HTML page.
+
+The main purpose is to be able to display [TEI-flavoured XML](https://tei-c.org/) next to a PDF/image viewer, but in fact any valid XML can be successfully embedded in an HTML page, provided a minimal CSS file is supplied with it to provide visual structure. This has - so far - mostly only been possible to do in browsers when serving an entire page's worth of content, although there is some prior art in the form of [CETEIcean](https://github.com/TEIC/CETEIcean). This project, however, seeks to be more flexible and less buggy in its implementation, while also integrating into a reactive UI and the rich [ClojureScript](https://clojurescript.org/) ecosystem.
 
 Development prerequisites
 -------------------------
