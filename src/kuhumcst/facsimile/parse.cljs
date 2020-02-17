@@ -42,7 +42,7 @@
     (zip/replace loc (assoc node 1 (as-data-* attr)))
     loc))
 
-(defn remame-attr
+(defn rename-attr
   "Rename attr according to `kmap`."
   [kmap [[tag attr & content :as node] _ :as loc]]
   (if (map? attr)
@@ -71,7 +71,7 @@
                           (remove-comment))
       (vector? node) (->> (trim-vec loc)
                           (attr->data-attr)
-                          (remame-attr attr-kmap)
+                          (rename-attr attr-kmap)
                           (add-prefix prefix)))))
 
 (defn element
