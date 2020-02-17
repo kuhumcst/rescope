@@ -11,6 +11,12 @@
 ;; Note: js/Reflect.construct simply replicates a call to super() and in the
 ;; case of custom HTML elements, the constructor must otherwise be empty!
 (defn- extend-class*
+  "Private implementation of extend-class, expecting only JavaScript types. This
+  is simply a way to emulate the more modern class-based JS while still using
+  its prototype-based subclassing.
+
+  The primary goal was to emulate a call to super() in the constructor. This is
+  a requirement when creating custom HTML components."
   [parent constructor properties-obj]
   (let [child     (fn child* []
                     (let [obj (js/Reflect.construct parent #js[] child*)]
@@ -35,14 +41,19 @@
          (clj->js))))
 
 (defn extend-class
-  "Create a subclass from the prototype of a `parent` class and a map of object
-  `properties`."
+  "Extend the prototype of a `parent` class with a new `constructor` fn and a
+  map of custom object `properties`."
   [parent constructor properties]
   (extend-class* parent constructor (js-props properties)))
 
 (defn define
-  "Define a custom element based on a tag name."
-  [tag constructor properties]
-  (when (undefined? (js/window.customElements.get tag))
-    (let [element (extend-class js/HTMLElement constructor properties)]
-      (js/window.customElements.define tag element))))
+  "Define a custom element based on a `tag` name, an optional `constructor` fn,
+  and an optional map of `properties`."
+  ([tag constructor properties]
+   (when (undefined? (js/window.customElements.get tag))
+     (let [element (extend-class js/HTMLElement constructor properties)]
+       (js/window.customElements.define tag element))))
+  ([tag constructor]
+   (define tag constructor {}))
+  ([tag]
+   (define tag :no-op {})))

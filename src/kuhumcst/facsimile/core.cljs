@@ -38,7 +38,7 @@
     ;; its shadow DOM once connected to the light DOM.
     (interop/define "shadow-content" shadow-constructor shadow-props)
 
-    ;; Define custom HTML elements for all of the hiccup vectors in the hiccup.
+    ;; Define custom HTML elements covering all of the hiccup content.
     (doseq [tag tags]
-      (interop/define (name tag) :no-op {}))
+      (interop/define (name tag)))
     [:shadow-content {:data-key k}]))
