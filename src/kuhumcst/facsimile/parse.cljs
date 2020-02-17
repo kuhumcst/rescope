@@ -5,7 +5,8 @@
             [clojure.set :as set]
             [hickory.core :as hickory]
             [hickory.zip :as hzip]
-            [kuhumcst.facsimile.util :as util]))
+            [kuhumcst.facsimile.util :as util]
+            [kuhumcst.facsimile.shadow :as shadow]))
 
 (defn- trim-str
   "Remove any blank strings from a string node `loc`."
@@ -22,14 +23,6 @@
     (zip/remove loc)
     loc))
 
-(defn- trim-vec
-  "Remove the empty attr from a hiccup vector node `loc`."
-  [[[tag attr & content :as node] _ :as loc]]
-  (if (and (map? attr)
-           (empty? attr))
-    (zip/replace loc (into [tag] content))
-    loc))
-
 (defn- as-data-*
   [attr]
   (into {} (for [[k v] attr]
@@ -43,10 +36,23 @@
     loc))
 
 (defn rename-attr
-  "Rename attr according to `kmap`."
+  "Rename attr keys according to `kmap`."
   [kmap [[tag attr & content :as node] _ :as loc]]
   (if (map? attr)
     (zip/replace loc (assoc node 1 (set/rename-keys attr (as-data-* kmap))))
+    loc))
+
+(defn- matching-comp-fn
+  [node]
+  (fn [_ pred comp]
+    (when (pred node)
+      (reduced comp))))
+
+(defn shadow-replace
+  "Insert shadow roots from components based on matches in `replacements`."
+  [replacements [[tag attr & content :as node] _ :as loc]]
+  (if-let [comp (reduce-kv (matching-comp-fn node) nil replacements)]
+    (zip/edit loc assoc-in [1 :ref] (shadow/root comp))
     loc))
 
 (defn- add-prefix
@@ -59,20 +65,21 @@
 
 (defn- patch-fn
   "Create an fn for processing an XML-derived hiccup zipper `loc` based on a
-  `prefix` and an `attr-kmap`.
+  `prefix`, an `attr-kmap`, and a `pred->comp` mapping.
 
   The hiccup structure is trimmed and the prefix is applied to all element tags
   in the tree. Attributes are renamed according to attr-kmap or converted into
-  the data-* format."
-  [prefix attr-kmap]
+  the data-* format. Finally, shadow roots are inserted based on satisfying the
+  preds of pred->comp, the HTML now being rendered by the replacement comp."
+  [prefix attr-kmap pred->comp]
   (fn [[node _ :as loc]]
     (cond
       (string? node) (->> (trim-str loc)
                           (remove-comment))
-      (vector? node) (->> (trim-vec loc)
-                          (attr->data-attr)
+      (vector? node) (->> (attr->data-attr loc)
                           (rename-attr attr-kmap)
-                          (add-prefix prefix)))))
+                          (add-prefix prefix)
+                          (shadow-replace pred->comp)))))
 
 (defn element
   "Create an element selector predicate for element `tags`. Will select elements
@@ -136,9 +143,3 @@
   "Naïvely convert an `xml` string into an initial hiccup representation."
   [xml]
   (-> xml dom-parse hickory/as-hiccup))
-
-(defn patch-hiccup
-  "Clean the initial `hiccup` structure, apply the tag `prefix`, and remap the
-  initial attrs according to `attr-kmap` (unmentioned attrs becoming data-*)."
-  [hiccup prefix attr-kmap]
-  (transform (patch-fn prefix attr-kmap) hiccup))

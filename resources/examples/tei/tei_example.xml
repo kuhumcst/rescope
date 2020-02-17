@@ -117,7 +117,7 @@
                 <p><unclear reason="illegible">abc</unclear></p>
                 <p><gap unit="chars" quantity="5" reason="illegible"/></p>
                 <p><add resp="#louishjelmslev" place="above">abc</add></p>
-                <list rend="bulleted"><item></item></list>
+                <list rend="bulleted"><item>glen 10</item><item>glen 20</item><item>glen 30</item></list>
                 <p><figure type="schema" facs="#page12.345"/></p>
                 <closer xml:id="sx2">
                     <salute><persName type="sender" ref="#louishjelmslev">Louis

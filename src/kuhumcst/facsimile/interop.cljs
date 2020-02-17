@@ -17,7 +17,7 @@
 
   The primary goal was to emulate a call to super() in the constructor. This is
   a requirement when creating custom HTML components."
-  [parent constructor properties-obj]
+  [parent properties-obj constructor]
   (let [child     (fn child* []
                     (let [obj (js/Reflect.construct parent #js[] child*)]
                       (constructor obj)
@@ -43,17 +43,17 @@
 (defn extend-class
   "Extend the prototype of a `parent` class with a new `constructor` fn and a
   map of custom object `properties`."
-  [parent constructor properties]
-  (extend-class* parent constructor (js-props properties)))
+  [parent properties constructor]
+  (extend-class* parent (js-props properties) constructor))
 
-(defn define
+(defn define!
   "Define a custom element based on a `tag` name, an optional `constructor` fn,
   and an optional map of `properties`."
-  ([tag constructor properties]
+  ([tag properties constructor]
    (when (undefined? (js/window.customElements.get tag))
-     (let [element (extend-class js/HTMLElement constructor properties)]
+     (let [element (extend-class js/HTMLElement properties constructor)]
        (js/window.customElements.define tag element))))
-  ([tag constructor]
-   (define tag constructor {}))
+  ([tag properties]
+   (define! tag properties :no-op))
   ([tag]
-   (define tag :no-op {})))
+   (define! tag {} :no-op)))
