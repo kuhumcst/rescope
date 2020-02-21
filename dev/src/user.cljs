@@ -2,6 +2,7 @@
   (:require [shadow.resource :as resource]
             [clojure.pprint :refer [pprint]]
             [reagent.core :as r]
+            [meander.epsilon :as m]
             [kuhumcst.facsimile.parse :as parse]
             [kuhumcst.facsimile.style :as style]
             [kuhumcst.facsimile.core :as facsimile]))
@@ -25,15 +26,7 @@
    "receiver" "Modtager"
    "sender"   "Afsender"})
 
-;; TODO: need an fn for converting this to the replacements* style below
 (def pred->comp
-  {[:list] (fn [this]
-             [:ul
-              (for [child (array-seq (.-children this))]
-                [:li {:dangerouslySetInnerHTML {:__html (.-innerHTML child)}
-                      :key                     (hash child)}])])})
-
-(def pred->comp*
   {(comp #{:tei-list} first) (fn [this]
                                [:ul
                                 (for [child (array-seq (.-children this))]
@@ -47,11 +40,39 @@
                                       :title href-type}
                                   [:slot]]))})
 
+(defn algorithmic-rewrite
+  [node]
+  (let [matching-comp #(fn [_ pred comp]
+                         (when (pred %)
+                           (reduced comp)))]
+    (reduce-kv (matching-comp node) nil pred->comp)))
+
+(defn meander-rewrite*
+  [x]
+  (m/rewrite x
+    [:tei-list ?attr .
+     [:tei-item !x] ...]
+    [:ul ?attr .
+     [:li !x] ...]
+
+    [_ {:data-ref ?ref :data-type ?type & _} & _]
+    [:a {:href  ?ref
+         :title (m/app ref-type->da-str ?type)}
+     [:slot]]))
+
+(defn hiccup->comp
+  [hiccup]
+  (when hiccup
+    (fn [this] hiccup)))
+
+(def meander-rewrite
+  (comp hiccup->comp meander-rewrite*))
+
 (defn app
   []
   (let [initial-hiccup (parse/xml->hiccup tei-example)
         prefix         (name (first initial-hiccup))
-        patch-hiccup   (parse/patch-fn prefix attr-kmap pred->comp*)
+        patch-hiccup   (parse/patch-fn prefix attr-kmap meander-rewrite)
         hiccup         (parse/transform patch-hiccup initial-hiccup)
         css            (style/patch-css css-example prefix)
         teiheader      (parse/select hiccup (parse/element :tei-teiheader))

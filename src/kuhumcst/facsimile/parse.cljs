@@ -48,10 +48,10 @@
     (when (pred node)
       (reduced comp))))
 
-(defn shadow-replace
-  "Insert shadow roots from components based on matches in `replacements`."
-  [replacements [[tag attr & content :as node] _ :as loc]]
-  (if-let [comp (reduce-kv (matching-comp-fn node) nil replacements)]
+(defn shadow-rewrite
+  "Insert shadow roots with components based on matches from `rewrite-fn`."
+  [rewrite-fn [[tag attr & content :as node] _ :as loc]]
+  (if-let [comp (rewrite-fn node)]
     (zip/edit loc assoc-in [1 :ref] (shadow/root comp))
     loc))
 
@@ -65,21 +65,21 @@
 
 (defn- patch-fn
   "Create an fn for processing an XML-derived hiccup zipper `loc` based on a
-  `prefix`, an `attr-kmap`, and a `pred->comp` mapping.
+  `prefix`, an `attr-kmap`, and a `rewrite-fn`.
 
   The hiccup structure is trimmed and the prefix is applied to all element tags
   in the tree. Attributes are renamed according to attr-kmap or converted into
-  the data-* format. Finally, shadow roots are inserted based on satisfying the
-  preds of pred->comp, the HTML now being rendered by the replacement comp."
-  [prefix attr-kmap pred->comp]
+  the data-* format. Finally, shadow roots are inserted based on the rewrite-fn,
+  the HTML now being rendered by any potential replacement components."
+  [prefix attr-kmap rewrite-fn]
   (fn [[node _ :as loc]]
     (cond
       (string? node) (->> (trim-str loc)
                           (remove-comment))
       (vector? node) (->> (attr->data-attr loc)
-                          (rename-attr attr-kmap)
+                          (rename-attr attr-kmap)           ; TODO: remove?
                           (add-prefix prefix)
-                          (shadow-replace pred->comp)))))
+                          (shadow-rewrite rewrite-fn)))))
 
 (defn element
   "Create an element selector predicate for element `tags`. Will select elements
