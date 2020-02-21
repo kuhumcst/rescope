@@ -18,13 +18,14 @@
   {:xml:lang :lang
    :xml:id   :id})
 
-(def ref-type->da-str
-  {"org"      "Organisation"
-   "pers"     "Person"
-   "place"    "Sted"
-   "publ"     "Publikation"
-   "receiver" "Modtager"
-   "sender"   "Afsender"})
+(def da-type
+  {"conference" "Konference"
+   "org"        "Organisation"
+   "pers"       "Person"
+   "place"      "Sted"
+   "publ"       "Publikation"
+   "receiver"   "Modtager"
+   "sender"     "Afsender"})
 
 (def pred->comp
   {(comp #{:tei-list} first) (fn [this]
@@ -35,7 +36,7 @@
    (comp :data-ref second)   (fn [this]
                                (let [dataset   (.-dataset this)
                                      href      (.-ref dataset)
-                                     href-type (ref-type->da-str (.-type dataset))]
+                                     href-type (da-type (.-type dataset))]
                                  [:a {:href  href
                                       :title href-type}
                                   [:slot]]))})
@@ -50,14 +51,16 @@
 (defn meander-rewrite*
   [x]
   (m/rewrite x
-    [:tei-list ?attr .
+    [:tei-list (m/or {:as ?attr}
+                     (m/let [?attr {}])) .
      [:tei-item !x] ...]
     [:ul ?attr .
      [:li !x] ...]
 
-    [_ {:data-ref ?ref :data-type ?type & _} & _]
+    [_ {:data-ref  (m/some ?ref)
+        :data-type ?type} & _]
     [:a {:href  ?ref
-         :title (m/app ref-type->da-str ?type)}
+         :title (m/app da-type ?type)}
      [:slot]]))
 
 (defn hiccup->comp
