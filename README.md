@@ -38,15 +38,15 @@ Workflow
 Development of the component is done using the live-reloading capabilities of shadow-cljs:
 
 ```
-shadow-cljs watch app
+shadow-cljs watch dev
 ```
 
-This will start a basic web server at `localhost:8000` serving the `:app` build as specified in the `shadow-cljs.edn` file.
+This will start a basic web server at `localhost:8000` serving the `:dev` build as specified in the `shadow-cljs.edn` file.
 
-It's possible to execute unit tests while developing by also specifying the `:unit-tests` build:
+It's possible to execute unit tests while developing by also specifying the `:test` build:
 
 ```
-shadow-cljs watch app unit-tests
+shadow-cljs watch dev test
 ```
 
 This will make test output available at `localhost:8001`. It's quite convenient to keep a separate browser tab open just for this. The favicon will be coloured green or red depending on the state of the assertions.
