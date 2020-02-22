@@ -1,5 +1,5 @@
 (ns kuhumcst.facsimile.parse
-  "Parse XML as hiccup and select elements from the parsed representation."
+  "Parse XML as hiccup and transform the parse tree."
   (:require [clojure.string :as str]
             [clojure.zip :as zip]
             [clojure.set :as set]
@@ -35,7 +35,7 @@
     (zip/edit loc assoc 1 (as-data-* attr))
     loc))
 
-(defn rename-attr
+(defn- rename-attr
   "Rename attr keys according to `kmap`."
   [kmap [[tag attr & content :as node] _ :as loc]]
   (if (map? attr)
@@ -47,7 +47,7 @@
   (with-meta o (assoc (meta o) k v)))
 
 ;; Only modifies metadata. Later this is merged into attr by meta-into-attr.
-(defn inject-shadow
+(defn- inject-shadow
   "Insert shadow roots with components based on matches from `rewrite-fn`."
   [rewrite-fn [[tag attr & content :as node] _ :as loc]]
   (if-let [comp (rewrite-fn node)]
@@ -69,7 +69,7 @@
     (zip/edit loc update 1 merge m)
     loc))
 
-(defn- patch-fn
+(defn patch-fn
   "Create an fn for processing an XML-derived hiccup zipper `loc` based on a
   `prefix`, an `attr-kmap`, and a `rewrite-fn`.
 
@@ -90,47 +90,6 @@
                           (rename-attr attr-kmap)           ; TODO: remove?
                           (add-prefix prefix)
                           (meta-into-attr)))))
-
-(defn element
-  "Create an element selector predicate for element `tags`. Will select elements
-  present in the list of tags. Selects all elements if no tags are specified."
-  [& tags]
-  (if (empty? tags)
-    vector?
-    (every-pred vector? (comp (set tags) first))))
-
-(defn attr
-  "Create an attribute selector predicate based on `attr`. Passing a set as attr
-  will test for the existence of attribute keys, while passing a map will test
-  for matching key-value pairs of attributes."
-  [attr]
-  (let [contains-attr? (fn [[_ m]]
-                         (cond
-                           (set? attr) (every? (partial contains? m) attr)
-                           (map? attr) (every? (set m) attr)
-                           :else (contains? m attr)))]
-    (every-pred vector? (comp map? second) contains-attr?)))
-
-(defn select-all
-  "Select all elements satisfying `preds` from an `hiccup` tree. If no
-  predicates are specified, all elements in the hiccup will be returned."
-  [hiccup & preds]
-  (let [satisfies-preds? (if (empty? preds)
-                           vector?
-                           (apply every-pred preds))]
-    (loop [[node _ :as loc] (hzip/hiccup-zip hiccup)
-           nodes []]
-      (if (zip/end? loc)
-        nodes
-        (recur (zip/next loc) (if (satisfies-preds? node)
-                                (conj nodes node)
-                                nodes))))))
-
-;; TODO: optimise - quit loop faster?
-(defn select
-  "Select the first element satisfying `preds` from an `hiccup` tree."
-  [hiccup & preds]
-  (first (apply select-all hiccup preds)))
 
 (defn transform
   "Apply `transform-fn` to every loc in the zipper starting at the root of an

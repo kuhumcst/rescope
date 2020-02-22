@@ -1,13 +1,13 @@
 (ns kuhumcst.facsimile.core
   (:require [clojure.string :as str]
-            [kuhumcst.facsimile.parse :as parse]
+            [kuhumcst.facsimile.select :as select]
             [kuhumcst.facsimile.interop :as interop]
             [kuhumcst.facsimile.shadow :as shadow]))
 
 (defn define-tags!
   "Define custom HTML elements covering all tags in the `hiccup`."
   [hiccup]
-  (doseq [tag (->> (parse/select-all hiccup)
+  (doseq [tag (->> (select/all hiccup)
                    (map (comp str/lower-case name first))
                    (set))]
     (interop/define! tag)))

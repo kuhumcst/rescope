@@ -4,6 +4,7 @@
             [reagent.core :as r]
             [meander.epsilon :as m]
             [kuhumcst.facsimile.parse :as parse]
+            [kuhumcst.facsimile.select :as select]
             [kuhumcst.facsimile.style :as style]
             [kuhumcst.facsimile.core :as facsimile]))
 
@@ -78,12 +79,12 @@
         patch-hiccup   (parse/patch-fn prefix attr-kmap meander-rewrite)
         hiccup         (parse/transform patch-hiccup initial-hiccup)
         css            (style/patch-css css-example prefix)
-        teiheader      (parse/select hiccup (parse/element :tei-teiheader))
-        facsimile      (parse/select hiccup (parse/element :tei-facsimile))
-        text           (parse/select hiccup (parse/element :tei-text))
-        test-nodes     (parse/select-all hiccup
-                                         (parse/element :tei-forename)
-                                         (parse/attr {:type "first"}))]
+        teiheader      (select/one hiccup (select/element :tei-teiheader))
+        facsimile      (select/one hiccup (select/element :tei-facsimile))
+        text           (select/one hiccup (select/element :tei-text))
+        test-nodes     (select/all hiccup
+                                   (select/element :tei-forename)
+                                   (select/attr {:type "first"}))]
     [:<>
      [:fieldset
       [:legend "Document"]
