@@ -51,14 +51,14 @@
 (defn meander-rewrite*
   [x]
   (m/rewrite x
-    [:tei-list (m/or {:as ?attr}
-                     (m/let [?attr {}])) .
-     [:tei-item !x] ...]
+    [:list (m/or {:as ?attr}
+                 (m/let [?attr {}])) .
+     [:item !x] ...]
     [:ul ?attr .
      [:li !x] ...]
 
-    [_ {:data-ref  (m/some ?ref)
-        :data-type ?type} & _]
+    [_ {:ref  (m/some ?ref)
+        :type ?type} & _]
     [:a {:href  ?ref
          :title (m/app da-type ?type)}
      [:slot]]))

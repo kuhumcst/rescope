@@ -32,27 +32,26 @@
   "Convert all attributes into data-* attributes."
   [[[tag attr & content :as node] _ :as loc]]
   (if (map? attr)
-    (zip/replace loc (assoc node 1 (as-data-* attr)))
+    (zip/edit loc assoc 1 (as-data-* attr))
     loc))
 
 (defn rename-attr
   "Rename attr keys according to `kmap`."
   [kmap [[tag attr & content :as node] _ :as loc]]
   (if (map? attr)
-    (zip/replace loc (assoc node 1 (set/rename-keys attr (as-data-* kmap))))
+    (zip/edit loc assoc 1 (set/rename-keys attr (as-data-* kmap)))
     loc))
 
-(defn- matching-comp-fn
-  [node]
-  (fn [_ pred comp]
-    (when (pred node)
-      (reduced comp))))
+(defn- assoc-meta
+  [o k v]
+  (with-meta o (assoc (meta o) k v)))
 
-(defn shadow-rewrite
+;; Only modifies metadata. Later this is merged into attr by meta-into-attr.
+(defn inject-shadow
   "Insert shadow roots with components based on matches from `rewrite-fn`."
   [rewrite-fn [[tag attr & content :as node] _ :as loc]]
   (if-let [comp (rewrite-fn node)]
-    (zip/edit loc assoc-in [1 :ref] (shadow/root comp))
+    (zip/edit loc assoc-meta :ref (shadow/root comp))
     loc))
 
 (defn- add-prefix
@@ -61,7 +60,14 @@
   [prefix [node _ :as loc]]
   (let [tag     (name (first node))
         new-tag (keyword (util/prefixed prefix tag))]
-    (zip/replace loc (apply vector new-tag (rest node)))))
+    (zip/edit loc assoc 0 new-tag)))
+
+(defn- meta-into-attr
+  "Merge the element metadata into the attr. Mimics the behaviour of reagent."
+  [[[tag attr & content :as node] _ :as loc]]
+  (if-let [m (meta node)]
+    (zip/edit loc update 1 merge m)
+    loc))
 
 (defn- patch-fn
   "Create an fn for processing an XML-derived hiccup zipper `loc` based on a
@@ -74,12 +80,16 @@
   [prefix attr-kmap rewrite-fn]
   (fn [[node _ :as loc]]
     (cond
-      (string? node) (->> (trim-str loc)
+      (string? node) (->> loc
+                          (trim-str)
                           (remove-comment))
-      (vector? node) (->> (attr->data-attr loc)
+      ;; Note: all operations must edit the existing node to preserve metadata!
+      (vector? node) (->> loc
+                          (inject-shadow rewrite-fn)
+                          (attr->data-attr)
                           (rename-attr attr-kmap)           ; TODO: remove?
                           (add-prefix prefix)
-                          (shadow-rewrite rewrite-fn)))))
+                          (meta-into-attr)))))
 
 (defn element
   "Create an element selector predicate for element `tags`. Will select elements
