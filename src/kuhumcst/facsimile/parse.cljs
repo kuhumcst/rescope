@@ -51,7 +51,7 @@
   "Insert shadow roots with components based on matches from `rewrite-fn`."
   [rewrite-fn [[tag attr & content :as node] _ :as loc]]
   (if-let [comp (rewrite-fn node)]
-    (zip/edit loc assoc-meta :ref (shadow/root comp))
+    (zip/edit loc assoc-meta :ref (shadow/root-ref comp))
     loc))
 
 (defn- add-prefix

@@ -1,12 +1,13 @@
 (ns user
-  (:require [shadow.resource :as resource]
+  (:require [clojure.string :as str]
             [clojure.pprint :refer [pprint]]
+            [shadow.resource :as resource]
             [reagent.core :as r]
             [meander.epsilon :as m]
             [kuhumcst.facsimile.parse :as parse]
             [kuhumcst.facsimile.select :as select]
             [kuhumcst.facsimile.style :as style]
-            [kuhumcst.facsimile.core :as facsimile]))
+            [kuhumcst.facsimile.shadow :as shadow]))
 
 (def tei-example
   ;(resource/inline "examples/tei/1151anno-anno-tei.xml"))
@@ -78,6 +79,9 @@
         prefix         (name (first initial-hiccup))
         patch-hiccup   (parse/patch-fn prefix attr-kmap meander-rewrite)
         hiccup         (parse/transform patch-hiccup initial-hiccup)
+        tags           (->> (select/all hiccup)
+                            (map (comp str/lower-case name first))
+                            (set))
         css            (style/patch-css css-example prefix)
         teiheader      (select/one hiccup (select/element :tei-teiheader))
         facsimile      (select/one hiccup (select/element :tei-facsimile))
@@ -94,7 +98,7 @@
       [:details
        [:summary "CSS"]
        [:pre css]]
-      [facsimile/custom-html hiccup css]]
+      [shadow/scope hiccup css tags]]
      [:fieldset
       [:legend "Header"]
       [:details
