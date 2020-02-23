@@ -23,21 +23,25 @@
                            :else (contains? m attr)))]
     (every-pred vector? (comp map? second) contains-attr?)))
 
+(defn select-while
+  "Select elements satisfying `preds` in a `hiccup` tree while (coll-pred coll)
+  returns logically true."
+  [coll-pred hiccup & preds]
+  (let [matches? (apply every-pred vector? preds)
+        collect  (fn [coll [node _ :as loc]]
+                   (cond-> coll
+                     (not (coll-pred coll)) (reduced)
+                     (matches? node) (conj node)))
+        zip-iter (iterate zip/next (hzip/hiccup-zip hiccup))]
+    (reduce collect [] (take-while (complement zip/end?) zip-iter))))
+
 (defn all
   "Select all elements satisfying `preds` in a `hiccup` tree. If no predicates
   are specified, all elements in the hiccup will be returned."
   [hiccup & preds]
-  (let [matches? (apply every-pred (or preds [vector?]))]
-    (loop [[node _ :as loc] (hzip/hiccup-zip hiccup)
-           nodes []]
-      (if (zip/end? loc)
-        nodes
-        (recur (zip/next loc) (if (matches? node)
-                                (conj nodes node)
-                                nodes))))))
+  (apply select-while (constantly true) hiccup preds))
 
-;; TODO: optimise - quit loop faster?
 (defn one
   "Select the first element satisfying `preds` in a `hiccup` tree."
   [hiccup & preds]
-  (first (apply all hiccup preds)))
+  (first (apply select-while #(< (count %) 1) hiccup preds)))

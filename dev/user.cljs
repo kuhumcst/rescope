@@ -84,7 +84,7 @@
         text           (select/one hiccup (select/element :tei-text))
         test-nodes     (select/all hiccup
                                    (select/element :tei-forename)
-                                   (select/attr {:type "first"}))]
+                                   (select/attr {:data-type "first"}))]
     [:<>
      [:fieldset
       [:legend "Document"]
