@@ -4,10 +4,10 @@
             [shadow.resource :as resource]
             [reagent.core :as r]
             [meander.epsilon :as m]
-            [kuhumcst.facsimile.parse :as parse]
-            [kuhumcst.facsimile.select :as select]
-            [kuhumcst.facsimile.style :as style]
-            [kuhumcst.facsimile.shadow :as shadow]))
+            [kuhumcst.rescope.xml.core :as xml]
+            [kuhumcst.rescope.select :as select]
+            [kuhumcst.rescope.style :as style]
+            [kuhumcst.rescope.core :as rescope]))
 
 (def tei-example
   ;(resource/inline "examples/tei/1151anno-anno-tei.xml"))
@@ -75,10 +75,10 @@
 
 (defn app
   []
-  (let [initial-hiccup (parse/xml->hiccup tei-example)
+  (let [initial-hiccup (xml/parse tei-example)
         prefix         (name (first initial-hiccup))
-        patch-hiccup   (parse/patch-fn prefix attr-kmap meander-rewrite)
-        hiccup         (parse/transform patch-hiccup initial-hiccup)
+        patch-hiccup   (xml/patch-fn prefix attr-kmap meander-rewrite)
+        hiccup         (xml/transform patch-hiccup initial-hiccup)
         tags           (->> (select/all hiccup)
                             (map (comp str/lower-case name first))
                             (set))
@@ -98,7 +98,7 @@
       [:details
        [:summary "CSS"]
        [:pre css]]
-      [shadow/scope hiccup css tags]]
+      [rescope/scope hiccup css tags]]
      [:fieldset
       [:legend "Header"]
       [:details
@@ -127,5 +127,5 @@
 
 (defn start-dev
   []
-  (println "Started development environment for kuhumcst/facsimile.")
+  (println "Started development environment for kuhumcst/rescope.")
   (render))

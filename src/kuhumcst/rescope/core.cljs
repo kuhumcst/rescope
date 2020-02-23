@@ -1,7 +1,7 @@
-(ns kuhumcst.facsimile.shadow
+(ns kuhumcst.rescope.core
   "Reagent components for integrating with the shadow DOM."
   (:require [reagent.core :as r]
-            [kuhumcst.facsimile.interop :as interop]))
+            [kuhumcst.rescope.interop :as interop]))
 
 ;; TODO: validate and only define actual custom element tags
 (defn define-custom-elements!
@@ -10,7 +10,7 @@
   (doseq [tag tags]
     (interop/define! tag)))
 
-(defn root-ref
+(defn shadow-ref
   "Get a :ref fn for a DOM element to render a given `comp` as its shadow root.
   The component should accept a single argument: the element's DOM reference."
   [comp]
@@ -28,4 +28,4 @@
                                  (split-at 2 hiccup)
                                  (split-at 1 hiccup))
          comp (fn [_] (into [:<> (when css [:style css])] children))]
-     [tag (assoc attr :ref (root-ref comp))])))
+     [tag (assoc attr :ref (shadow-ref comp))])))

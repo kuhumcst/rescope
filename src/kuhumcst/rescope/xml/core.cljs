@@ -1,12 +1,12 @@
-(ns kuhumcst.facsimile.parse
+(ns kuhumcst.rescope.xml.core
   "Parse XML as hiccup and transform the parse tree."
   (:require [clojure.string :as str]
             [clojure.zip :as zip]
             [clojure.set :as set]
             [hickory.core :as hickory]
             [hickory.zip :as hzip]
-            [kuhumcst.facsimile.util :as util]
-            [kuhumcst.facsimile.shadow :as shadow]))
+            [kuhumcst.rescope.util :as util]
+            [kuhumcst.rescope.core :as rescope]))
 
 (defn- trim-str
   "Remove any blank strings from a string node `loc`."
@@ -51,7 +51,7 @@
   "Insert shadow roots with components based on matches from `rewrite-fn`."
   [rewrite-fn [[tag attr & content :as node] _ :as loc]]
   (if-let [comp (rewrite-fn node)]
-    (zip/edit loc assoc-meta :ref (shadow/root-ref comp))
+    (zip/edit loc assoc-meta :ref (rescope/shadow-ref comp))
     loc))
 
 (defn- add-prefix
@@ -100,15 +100,15 @@
       (zip/root loc)
       (recur (zip/next (transform-fn loc))))))
 
-;; Hickory in fact calls the same DOM method in `hickory.core/parse`, but has
-;; been hardcoded to use the "text/html" mimetype rather than "text/xml"!
+;; Hickory in fact calls the same DOM method in hickory.core/parse, but has
+;; been hardcoded to use the "text/html" mimetype rather than "xml"!
 (defn- dom-parse
   [xml]
   (-> (js/DOMParser.)
       (.parseFromString xml "text/xml")
       (.-firstChild)))
 
-(defn xml->hiccup
+(defn parse
   "Naïvely convert an `xml` string into an initial hiccup representation."
   [xml]
   (-> xml dom-parse hickory/as-hiccup))

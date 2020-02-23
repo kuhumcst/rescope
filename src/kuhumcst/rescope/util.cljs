@@ -1,4 +1,4 @@
-(ns kuhumcst.facsimile.util
+(ns kuhumcst.rescope.util
   (:require [clojure.string :as str]))
 
 (defn prefixed

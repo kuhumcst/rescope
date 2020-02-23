@@ -1,5 +1,7 @@
-Facsimile
-=========
+rescope
+=======
+
+TODO: rewrite description below
 
 A facsimile viewer implemented as a [reagent](https://github.com/reagent-project/reagent) component utilising [custom HTML components](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) to embed XML directly into an HTML page.
 

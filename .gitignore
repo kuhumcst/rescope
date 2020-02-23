@@ -245,3 +245,4 @@ temp/
 facsimile.iml
 package-lock.json
 *.DS_store
+*.iml

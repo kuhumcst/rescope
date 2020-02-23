@@ -1,4 +1,4 @@
-(ns kuhumcst.facsimile.interop)
+(ns kuhumcst.rescope.interop)
 
 ;; Useful documentation of the JS interop used in this code:
 ;; * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Details_of_the_Object_Model

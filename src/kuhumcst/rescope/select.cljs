@@ -1,4 +1,4 @@
-(ns kuhumcst.facsimile.select
+(ns kuhumcst.rescope.select
   "Select elements in a hiccup tree."
   (:require [clojure.zip :as zip]
             [hickory.zip :as hzip]))

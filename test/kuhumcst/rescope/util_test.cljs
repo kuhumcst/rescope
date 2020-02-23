@@ -1,6 +1,6 @@
-(ns kuhumcst.facsimile.util-test
+(ns kuhumcst.rescope.util-test
   (:require [clojure.test :refer [deftest is]]
-            [kuhumcst.facsimile.util :as util]))
+            [kuhumcst.rescope.util :as util]))
 
 (deftest prefixed
   (let [prefixed* (partial util/prefixed "font")
