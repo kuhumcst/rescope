@@ -1,10 +1,12 @@
 rescope
 =======
-With rescope, the combined forces of [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) and the [shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) allow you to embed different document formats directly into a [re-frame](https://github.com/day8/re-frame) or [reagent](https://github.com/reagent-project/reagent) application. At the same time, rescope also provides simple escape hatches for when you need to provide HTML-specific structure or interactivity. Embedding with rescope is both simple and requires very little code, mostly just CSS. In return you get portable & customisable content that will stay styled precisely the way you define it.
+With `rescope`, modern browser features like the [shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) and [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) let you embed  most documents directly in a [re-frame](https://github.com/day8/re-frame) or [reagent](https://github.com/reagent-project/reagent) application. Rescoping requires very little code, mostly just CSS. At the same time, escape hatches are provided for when you need to restructure or add interactivity to your documents.
 
-Using [rescope.formats.xml](https://github.com/kuhumcst/rescope/tree/master/src/kuhumcst/rescope/formats), you can embed XML directly into your HTML page and still have it be completely valid HTML. The reagent component allows for treating XML not as a data interchange format, but as a visualisation of a document, a widget, or maybe even a little application. CSS is automatically patched to reflect the tag & attribute renaming that allows the XML to moonlight as HTML. This means regular CSS can be written directly for XML even though it's being embedded in an HTML page. And by scoping the CSS inside a shadow DOM, there is no chance of clashing with any of the global CSS rules.
+Using [rescope.formats.xml](https://github.com/kuhumcst/rescope/tree/master/src/kuhumcst/rescope/formats), you can embed XML directly in your web page as if it were completely valid HTML. XML is no longer just for data exchange, but can be viewed as a visualisation of a document, a widget, or maybe even a little application.
 
-However, rescope can embed _any_ [hiccup-like](https://github.com/weavejester/hiccup) structure -- quite handy in the ClojureScript world! For example, the default output of [instaparse](https://github.com/Engelberg/instaparse) is a hiccup-like structure. The implication is clear: anything that can be parsed can be rescoped as a reagent component.
+CSS is automatically patched to reflect the tag & attribute renaming that allows the XML to moonlight as HTML. This means regular CSS can be written directly for the XML. And since both CSS and XML are scoped inside a shadow DOM, there is no chance of clashing with any other CSS on the page.
+
+However, `rescope` can embed, style, and patch _any_ [hiccup-like](https://github.com/weavejester/hiccup) structure -- quite handy in the ClojureScript world! For example, the default output of [instaparse](https://github.com/Engelberg/instaparse) is a hiccup-like structure. The implication is clear: anything that can be parsed can potentially be rescoped as an interactive reagent component.
 
 Quickstart
 ----------
@@ -12,7 +14,7 @@ TODO: write a small introduction with some examples.
 
 Origin
 ------
-The original purpose was to be able to display [TEI-flavoured XML](https://tei-c.org/) next to a PDF/image viewer. This has -- so far -- mostly only been possible to do in browsers when serving an entire page's worth of content, although there is some prior art in the form of [CETEIcean](https://github.com/TEIC/CETEIcean) which also uses custom elements. This project, however, seeks to be more flexible in its implementation, integrating into a reactive UI and the rich [ClojureScript](https://clojurescript.org/) ecosystem.
+The original purpose was to be able to display [TEI-flavoured XML](https://tei-c.org/) next to a PDF/image viewer while preserving the XML structure entirely. This has -- so far -- mostly only been possible to do in browsers when serving an entire page's worth of relatively static XML content, although there is some prior art in the form of [CETEIcean](https://github.com/TEIC/CETEIcean) which also uses custom elements. This project, however, seeks to be more flexible in its implementation, while integrating into a reactive UI paradigm and the rich [ClojureScript](https://clojurescript.org/) ecosystem.
 
 Development prerequisites
 -------------------------
