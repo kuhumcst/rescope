@@ -1,4 +1,4 @@
-(ns kuhumcst.rescope.xml.core
+(ns kuhumcst.rescope.formats.xml
   "Parse XML as hiccup and transform the parse tree."
   (:require [clojure.string :as str]
             [clojure.zip :as zip]

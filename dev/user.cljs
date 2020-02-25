@@ -4,7 +4,7 @@
             [shadow.resource :as resource]
             [reagent.core :as r]
             [meander.epsilon :as m]
-            [kuhumcst.rescope.xml.core :as xml]
+            [kuhumcst.rescope.formats.xml :as xml]
             [kuhumcst.rescope.select :as select]
             [kuhumcst.rescope.style :as style]
             [kuhumcst.rescope.core :as rescope]))
