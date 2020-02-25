@@ -4,11 +4,11 @@
             [kuhumcst.rescope.interop :as interop]))
 
 ;; TODO: validate and only define actual custom element tags
-(defn define-custom-elements!
+(defn define-elements!
   "Define custom HTML elements covering all `tags`."
   [tags]
   (doseq [tag tags]
-    (interop/define! tag)))
+    (interop/define-element! tag)))
 
 (defn shadow-ref
   "Get a :ref fn for a DOM element to render a given `comp` as its shadow root.
@@ -23,7 +23,7 @@
   "Render `hiccup` inside a shadow DOM with the root element as the shadow host.
   Optionally accepts scoped `css` and `tags` to define as custom HTML elements."
   ([hiccup & [css tags]]
-   (define-custom-elements! tags)
+   (define-elements! tags)
    (let [[[tag attr] children] (if (map? (second hiccup))
                                  (split-at 2 hiccup)
                                  (split-at 1 hiccup))

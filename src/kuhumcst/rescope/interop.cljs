@@ -17,43 +17,40 @@
 
   The primary goal was to emulate a call to super() in the constructor. This is
   a requirement when creating custom HTML components."
-  [parent properties-obj constructor]
+  [parent props-obj construct]
   (let [child     (fn child* []
                     (let [obj (js/Reflect.construct parent #js[] child*)]
-                      (constructor obj)
+                      (when construct
+                        (construct obj))
                       obj))
-        prototype (js/Object.create (.-prototype parent) properties-obj)]
+        prototype (js/Object.create (.-prototype parent) (or props-obj
+                                                             js/undefined))]
     (set! (.-prototype child) prototype)
     child))
 
 (defn- js-props
   "Convert a map of properties into a properties object that can be consumed by
   extend-class*."
-  [m]
+  [props]
   (let [wrap-method (fn [f]
                       (fn [& args]
                         (this-as this (f this args))))]
-    (->> (for [[k v] m]
-           [k {:value (if (fn? v)
-                        (wrap-method v)
-                        v)}])
-         (into {})
-         (clj->js))))
+    (some->> (for [[k v] props]
+               [k {:value (if (fn? v)
+                            (wrap-method v)
+                            v)}])
+             (into {})
+             (clj->js))))
 
 (defn extend-class
-  "Extend the prototype of a `parent` class with a new `constructor` fn and a
-  map of custom object `properties`."
-  [parent properties constructor]
-  (extend-class* parent (js-props properties) constructor))
+  "Extend the prototype of a `parent` class with a map of object `props`."
+  [parent & [{:keys [construct] :as props}]]
+  (extend-class* parent (js-props (dissoc props :construct)) construct))
 
-(defn define!
-  "Define a custom element based on a `tag` name, an optional `constructor` fn,
-  and an optional map of `properties`."
-  ([tag properties constructor]
-   (when (undefined? (js/window.customElements.get tag))
-     (let [element (extend-class js/HTMLElement properties constructor)]
-       (js/window.customElements.define tag element))))
-  ([tag properties]
-   (define! tag properties :no-op))
-  ([tag]
-   (define! tag {} :no-op)))
+(defn define-element!
+  "Define a custom element based on a `tag` name. Can optionally take a map of
+  `props` to refine the prototype of the new HTMLElement subclass."
+  [tag & [props]]
+  (when (undefined? (js/window.customElements.get tag))
+    (let [element (extend-class js/HTMLElement props)]
+      (js/window.customElements.define tag element))))
