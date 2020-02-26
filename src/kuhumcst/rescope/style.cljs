@@ -60,11 +60,11 @@
       (str/replace #"\n\n+" "\n\n")                         ; multiple newlines
       (str/triml)))
 
-(defn patch-css
-  "Patch a piece of `css` written for the original XML structure so that it fits
-  into the converted structure of the embedded XML. Will remove comments, add
-  `prefix` to element selectors, and convert attribute selectors to data-*."
-  [css prefix]
+(defn prefix-css
+  "Patch a piece of `css` written for the original document structure so that it
+  matches the postprocessed hiccup. Will remove comments, add `prefix` to
+  element selectors, and convert all attribute selectors to the data-* style."
+  [prefix css]
   (->> (remove-comments css)
        (prefix-element-selectors prefix)
        (convert-to-data-*)

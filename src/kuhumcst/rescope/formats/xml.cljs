@@ -4,7 +4,6 @@
             [clojure.zip :as zip]
             [clojure.set :as set]
             [hickory.core :as hickory]
-            [hickory.zip :as hzip]
             [kuhumcst.rescope.util :as util]
             [kuhumcst.rescope.core :as rescope]))
 
@@ -69,36 +68,33 @@
     (zip/edit loc update 1 merge m)
     loc))
 
-(defn patch-fn
-  "Create an fn for processing an XML-derived hiccup zipper `loc` based on a
-  `prefix`, an `attr-kmap`, and a `rewrite-fn`.
+(defn- edit-leaf
+  [[node _ :as loc]]
+  (if (string? node)
+    (->> loc
+         (trim-str)
+         (remove-comment))
+    node))
 
-  The hiccup structure is trimmed and the prefix is applied to all element tags
-  in the tree. Attributes are renamed according to attr-kmap or converted into
-  the data-* format. Finally, shadow roots are inserted based on the rewrite-fn,
-  the HTML now being rendered by any potential replacement components."
+(defn- edit-branch
+  [prefix attr-kmap rewrite-fn loc]
+  (->> loc
+       (inject-shadow rewrite-fn)
+       (attr->data-attr)
+       (rename-attr attr-kmap)                              ; TODO: remove?
+       (add-prefix prefix)
+       (meta-into-attr)))
+
+(defn postprocessor
+  "Create an fn for postprocessing a XML-derived hiccup zipper loc.
+
+  The hiccup structure is trimmed and the `prefix` is applied to all element
+  tags in the tree. Attributes are renamed according to `attr-kmap` or converted
+  into the data-* format. Finally, shadow roots are inserted based on the
+  `rewrite-fn`, the HTML now being rendered by replacement components."
   [prefix attr-kmap rewrite-fn]
-  (fn [[node _ :as loc]]
-    (cond
-      (string? node) (->> loc
-                          (trim-str)
-                          (remove-comment))
-      ;; Note: all operations must edit the existing node to preserve metadata!
-      (vector? node) (->> loc
-                          (inject-shadow rewrite-fn)
-                          (attr->data-attr)
-                          (rename-attr attr-kmap)           ; TODO: remove?
-                          (add-prefix prefix)
-                          (meta-into-attr)))))
-
-(defn transform
-  "Apply `transform-fn` to every loc in the zipper starting at the root of an
-  `hiccup` tree and return the transformed structure."
-  [transform-fn hiccup]
-  (loop [loc (hzip/hiccup-zip hiccup)]
-    (if (zip/end? loc)
-      (zip/root loc)
-      (recur (zip/next (transform-fn loc))))))
+  (rescope/postprocessor edit-leaf
+                         (partial edit-branch prefix attr-kmap rewrite-fn)))
 
 ;; Hickory in fact calls the same DOM method in hickory.core/parse, but has
 ;; been hardcoded to use the "text/html" mimetype rather than "xml"!

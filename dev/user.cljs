@@ -1,6 +1,5 @@
 (ns user
-  (:require [clojure.string :as str]
-            [clojure.pprint :refer [pprint]]
+  (:require [clojure.pprint :refer [pprint]]
             [shadow.resource :as resource]
             [reagent.core :as r]
             [meander.epsilon :as m]
@@ -75,20 +74,16 @@
 
 (defn app
   []
-  (let [initial-hiccup (xml/parse tei-example)
-        prefix         (name (first initial-hiccup))
-        patch-hiccup   (xml/patch-fn prefix attr-kmap meander-rewrite)
-        hiccup         (xml/transform patch-hiccup initial-hiccup)
-        tags           (->> (select/all hiccup)
-                            (map (comp str/lower-case name first))
-                            (set))
-        css            (style/patch-css css-example prefix)
-        teiheader      (select/one hiccup (select/element :tei-teiheader))
-        facsimile      (select/one hiccup (select/element :tei-facsimile))
-        text           (select/one hiccup (select/element :tei-text))
-        test-nodes     (select/all hiccup
-                                   (select/element :tei-forename)
-                                   (select/attr {:data-type "first"}))]
+  (let [css               (style/prefix-css "tei" css-example)
+        raw-hiccup        (xml/parse tei-example)
+        xml-postprocessor (xml/postprocessor "tei" attr-kmap meander-rewrite)
+        hiccup            (rescope/postprocess xml-postprocessor raw-hiccup)
+        teiheader         (select/one hiccup (select/element :tei-teiheader))
+        facsimile         (select/one hiccup (select/element :tei-facsimile))
+        text              (select/one hiccup (select/element :tei-text))
+        test-nodes        (select/all hiccup
+                                      (select/element :tei-forename)
+                                      (select/attr {:data-type "first"}))]
     [:<>
      [:fieldset
       [:legend "Document"]
@@ -98,7 +93,7 @@
       [:details
        [:summary "CSS"]
        [:pre css]]
-      [rescope/scope hiccup css tags]]
+      [rescope/scope hiccup css]]
      [:fieldset
       [:legend "Header"]
       [:details

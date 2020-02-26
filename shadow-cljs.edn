@@ -1,6 +1,6 @@
 {:deps     {:aliases [:dev :test]}
  :dev-http {8000 "classpath:public"}
- :nrepl    {:port    9000
+ :nrepl    {:port    8900
             :init-ns dev}
  :builds   {:dev  {:target     :browser
                    :output-dir "resources/public/js/compiled"
@@ -8,5 +8,5 @@
                    :modules    {:main {:init-fn user/start-dev}}}
             :test {:target   :browser-test
                    :test-dir "resources/public/js/test"
-                   :devtools {:http-port 8001
+                   :devtools {:http-port 8100
                               :http-root "resources/public/js/test"}}}}
