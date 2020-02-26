@@ -1,7 +1,16 @@
 (ns kuhumcst.rescope.core
   "Reagent components for integrating with the shadow DOM."
-  (:require [reagent.core :as r]
+  (:require [clojure.string :as str]
+            [reagent.core :as r]
+            [kuhumcst.rescope.select :as select]
             [kuhumcst.rescope.interop :as interop]))
+
+(defn hiccup->tags
+  "Get a set of all tags (as strings) found in a `hiccup` tree."
+  [hiccup]
+  (->> (select/all hiccup)
+       (map (comp str/lower-case name first))
+       (set)))
 
 ;; TODO: validate and only define actual custom element tags
 (defn define-elements!
