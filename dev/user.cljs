@@ -4,6 +4,7 @@
             [reagent.core :as r]
             [meander.epsilon :as m]
             [kuhumcst.rescope.formats.xml :as xml]
+            [kuhumcst.rescope.hiccup :as hic]
             [kuhumcst.rescope.select :as select]
             [kuhumcst.rescope.style :as style]
             [kuhumcst.rescope.core :as rescope]))
@@ -69,21 +70,22 @@
   (when hiccup
     (fn [this] hiccup)))
 
-(def meander-rewrite
+(def injector
   (comp hiccup->comp meander-rewrite*))
 
 (defn app
   []
-  (let [css               (style/prefix-css "tei" css-example)
-        raw-hiccup        (xml/parse tei-example)
-        xml-postprocessor (xml/postprocessor "tei" attr-kmap meander-rewrite)
-        hiccup            (rescope/postprocess xml-postprocessor raw-hiccup)
-        teiheader         (select/one hiccup (select/element :tei-teiheader))
-        facsimile         (select/one hiccup (select/element :tei-facsimile))
-        text              (select/one hiccup (select/element :tei-text))
-        test-nodes        (select/all hiccup
-                                      (select/element :tei-forename)
-                                      (select/attr {:data-type "first"}))]
+  (let [css        (style/prefix-css "tei" css-example)
+        hiccup     (-> (xml/parse tei-example)
+                       (hic/postprocess {:prefix    "tei"
+                                         :attr-kmap attr-kmap
+                                         :injector  injector}))
+        teiheader  (select/one hiccup (select/element :tei-teiheader))
+        facsimile  (select/one hiccup (select/element :tei-facsimile))
+        text       (select/one hiccup (select/element :tei-text))
+        test-nodes (select/all hiccup
+                               (select/element :tei-forename)
+                               (select/attr {:data-type "first"}))]
     [:<>
      [:fieldset
       [:legend "Document"]

@@ -1,8 +1,8 @@
 rescope
 =======
-With `rescope`, modern browser features like the [shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) and [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) let you embed  most documents directly in a [re-frame](https://github.com/day8/re-frame) or [reagent](https://github.com/reagent-project/reagent) application. Rescoping requires very little code, mostly just CSS. At the same time, escape hatches are provided for when you need to restructure or add interactivity to your documents.
+By combining modern browser features such as the [shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) and [custom HTML elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements), `rescope` lets you embed most documents directly in a [re-frame](https://github.com/day8/re-frame) or [reagent](https://github.com/reagent-project/reagent) application. Rescoping requires very little code, mostly just CSS. At the same time, escape hatches are provided for when you need to restructure or add interactivity to your documents.
 
-Using [rescope.formats.xml](https://github.com/kuhumcst/rescope/tree/master/src/kuhumcst/rescope/formats), you can embed XML directly in your web page as if it were completely valid HTML. XML is no longer just for data exchange, but can be viewed as a visualisation of a document, a widget, or maybe even a little application.
+Through [rescope.formats.xml](https://github.com/kuhumcst/rescope/tree/master/src/kuhumcst/rescope/formats), you can embed XML directly in your web page as if it were completely valid HTML. With this new property, XML is no longer just for data exchange, but can be viewed as a visualisation of a document, a widget, or maybe even a little application.
 
 CSS is automatically patched to reflect the tag & attribute renaming that allows the XML to moonlight as HTML. This means regular CSS can be written directly for the XML. And since both CSS and XML are scoped inside a shadow DOM, there is no chance of clashing with any other CSS on the page.
 
@@ -10,7 +10,22 @@ However, `rescope` can embed, style, and patch _any_ [hiccup-like](https://githu
 
 Quickstart
 ----------
-TODO: write a small introduction with some examples.
+Building a `rescope` component from scratch is quite simple:
+
+1. Find a way to `parse` your chosen document type as hiccup. For XML, you can simply use the included parser.
+2. Write some CSS for visual structure and patch it using `prefix-css`.
+3. _(optional)_ Create an `injector` function to inject reagent components at appropriate points.
+4. Postprocess the hiccup using the `postprocess` function.
+5. Display the hiccup with scoped CSS using the `scope` component.
+
+### Frontend or backend?
+Parsing can take place in both the frontend and the backend. For performance reasons it can sometimes make sense to perform this step in the backend -- or at least memoize it in the frontend. However, doing parsing in the frontend undoubtedly simplifies things and it might even make *more* sense when parsing XML.
+
+Postprocessing, however, should nearly *always* take place in the frontend. The only exception to this is when you serve completely static content, i.e. no injections. Injections are ClojureScript functions and can't be sent from the backend to the frontend. 
+
+### Example
+
+TODO: write a small example.
 
 Origin
 ------
