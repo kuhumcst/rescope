@@ -1,4 +1,7 @@
-(ns kuhumcst.rescope.interop)
+(ns kuhumcst.rescope.interop
+  "Wrapping gnarly JS interop with the browser API in a smart way.
+
+  NOTE: fns marked with ^:experimental rely on experimental browser APIs.")
 
 ;; Useful documentation of the JS interop used in this code:
 ;; * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Details_of_the_Object_Model
@@ -54,3 +57,20 @@
   (when (undefined? (js/window.customElements.get tag))
     (let [element (extend-class js/HTMLElement props)]
       (js/window.customElements.define tag element))))
+
+(defn blob
+  "Create a Blob object from a `coll` of content and a `type` (from `opts`)."
+  [coll {:keys [type] :as opts}]
+  (js/Blob. (apply array coll) (clj->js opts)))
+
+(defn ^:experimental auto-revoked
+  "Wrap an atom `a` holding an object URL to auto-revoke the older objects."
+  [a]
+  (doto a
+    (add-watch :change (fn [k r o n] (when (and o (not= o n))
+                                       (js/URL.revokeObjectURL o))))))
+
+(def ^:experimental blob-url
+  "Create (or reuse) an object URL for a custom Blob based on `coll` and `opts`.
+  Use together with auto-revoked to properly garbage-collect dangling objects."
+  (memoize (fn [coll opts] (js/URL.createObjectURL (blob coll opts)))))

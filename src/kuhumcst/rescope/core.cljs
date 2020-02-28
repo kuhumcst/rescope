@@ -31,11 +31,13 @@
 
 (defn scope
   "Render `hiccup` inside a shadow DOM with the root element as the shadow host.
-  Optionally takes scoped `css` to apply to the content in the shadow DOM."
+  Optionally takes scoped `css` to apply to the content inside the shadow DOM.
+  The `css` can be a string or hiccup, e.g. [:style], [:link], [:template]."
   ([hiccup & [css]]
    (define-elements! (hiccup->custom-tags hiccup))
    (let [[[tag attr] children] (if (map? (second hiccup))
                                  (split-at 2 hiccup)
                                  (split-at 1 hiccup))
-         comp (fn [_] (into [:<> (when css [:style css])] children))]
+         style (if (string? css) [:style css] css)
+         comp  (fn [_] (into [:<> style] children))]
      [tag (assoc attr :ref (shadow-ref comp))])))

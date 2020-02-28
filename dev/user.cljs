@@ -7,6 +7,7 @@
             [kuhumcst.rescope.hiccup :as hic]
             [kuhumcst.rescope.select :as select]
             [kuhumcst.rescope.style :as style]
+            [kuhumcst.rescope.interop :as interop]
             [kuhumcst.rescope.core :as rescope]))
 
 (def tei-example
@@ -73,6 +74,9 @@
 (def injector
   (comp hiccup->comp meander-rewrite*))
 
+(defonce css-href
+  (interop/auto-revoked (atom nil)))
+
 (defn app
   []
   (let [css        (style/prefix-css "tei" css-example)
@@ -86,6 +90,7 @@
         test-nodes (select/all hiccup
                                (select/element :tei-forename)
                                (select/attr {:data-type "first"}))]
+    (reset! css-href (interop/blob-url [css] {:type "text/css"}))
     [:<>
      [:fieldset
       [:legend "Document"]
@@ -95,6 +100,10 @@
       [:details
        [:summary "CSS"]
        [:pre css]]
+      ;; This is just left here as a proof of concept. Using <link> over <style>
+      ;; in a shadow DOM introduces a bit of flickering in Chrome and Firefox,
+      ;; which is not desirable. Safari seems unaffected, though.
+      ;[rescope/scope hiccup [:link {:rel "stylesheet" :href @css-href}]]]
       [rescope/scope hiccup css]]
      [:fieldset
       [:legend "Header"]
