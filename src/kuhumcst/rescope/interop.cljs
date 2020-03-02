@@ -66,9 +66,8 @@
 (defn ^:experimental auto-revoked
   "Wrap an atom `a` holding an object URL to auto-revoke the older objects."
   [a]
-  (doto a
-    (add-watch :change (fn [k r o n] (when (and o (not= o n))
-                                       (js/URL.revokeObjectURL o))))))
+  (add-watch a :change (fn [k r o n] (when (and o (not= o n))
+                                       (js/URL.revokeObjectURL o)))))
 
 (def ^:experimental blob-url
   "Create (or reuse) an object URL for a custom Blob based on `coll` and `opts`.

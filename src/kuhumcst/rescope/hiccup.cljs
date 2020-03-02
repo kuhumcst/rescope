@@ -86,21 +86,6 @@
        (add-prefix prefix)
        (meta-into-attr)))
 
-;; The way hiccup is zipped, every branch is a hiccup vector, while everything
-;; else is a leaf. Leafs are mostly string content, but can be other types too.
-(defn mk-postprocessor
-  "Create an fn for postprocessing a hiccup zipper loc.
-
-  The hiccup structure is trimmed and the `prefix` is applied to all element
-  tags in the tree. Attributes are renamed according to `attr-kmap` or converted
-  into the data-* format. Finally, shadow roots are inserted based on the
-  `injector`, the HTML now being rendered by replacement components."
-  [{:keys [prefix attr-kmap injector] :as opts}]
-  (fn [[node _ :as loc]]
-    (if (vector? node)
-      (edit-branch prefix attr-kmap injector loc)
-      (edit-leaf loc))))
-
 (defn- ignore?
   "Return true if it makes sense to ignore this loc."
   [[[tag attr & content :as node] _ :as loc]]
@@ -108,13 +93,20 @@
        (= tag :<>)))                                        ; React fragments
 
 (defn postprocess
-  "Apply `postprocessor` to every relevant loc of a zipper made from a `hiccup`
-  tree and return the transformed structure."
+  "Process relevant nodes of a zipper made from a `hiccup` tree based on `opts`.
+  Return the transformed structure as valid HTML with shadow DOM injections.
+
+  The hiccup structure is trimmed and the `prefix` is applied to all element
+  tags in the tree. Attributes are renamed according to `attr-kmap` or converted
+  into the data-* format. Finally, shadow roots are inserted based on the
+  `injector`, the HTML now being rendered by replacement components."
   ([hiccup {:keys [prefix attr-kmap injector]
             :or   {prefix    "rescope"
                    attr-kmap {}
                    injector  (constantly nil)}
             :as   opts}]
+   ;; The way hiccup zips, every branch is a hiccup vector, while everything
+   ;; else is a leaf. Leafs are strings, but can be other types too.
    (let [postprocess* (fn [[node _ :as loc]]
                         (if (vector? node)
                           (edit-branch prefix attr-kmap injector loc)
