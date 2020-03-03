@@ -10,6 +10,10 @@
             [kuhumcst.rescope.interop :as interop]
             [kuhumcst.rescope.core :as rescope]))
 
+;(interop/request {:url         "https://fonts.googleapis.com/css?family=Noto+Sans+HK&display=swap"
+;                  :on-progress (fn [e]
+;                                 (println (interop/event-data e)))})
+
 (def tei-example
   ;(resource/inline "examples/tei/1151anno-anno-tei.xml"))
   (resource/inline "examples/tei/tei_example.xml"))

@@ -73,3 +73,30 @@
   "Create (or reuse) an object URL for a custom Blob based on `coll` and `opts`.
   Use together with auto-revoked to properly garbage-collect dangling objects."
   (memoize (fn [coll opts] (js/URL.createObjectURL (blob coll opts)))))
+
+;; TODO: finish, still very WIP
+;; See: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
+;; https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+(defn request
+  "Wrapping XMLHttpRequest as a function to make it more accessible."
+  [{:keys [url
+           method
+           headers
+           on-progress]
+    :or   {method "GET"}
+    :as   opts}]
+  (let [xhr (js/XMLHttpRequest.)]
+    (.open xhr method url)
+    (for [[k v] headers]
+      (.setRequestHeader xhr k v))
+    (when on-progress
+      (set! (.-onprogress xhr) on-progress))
+    (.send xhr)))
+
+(defmulti event-data #(.-type %))
+
+(defmethod event-data "progress"
+  [event]
+  {:loaded (.-loaded event)
+   :total  (when (.-lengthComputable event)
+             (.-total event))})
