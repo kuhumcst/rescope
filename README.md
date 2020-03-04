@@ -54,7 +54,7 @@ brew cask install adoptopenjdk
 The following will get you the Clojure CLI and shadow-cljs, along with NodeJS:
 
 ```
-brew install clojure
+brew install clojure/tools/clojure
 brew install node
 npm install -g shadow-cljs
 ```
@@ -75,7 +75,7 @@ It's possible to execute unit tests while developing by also specifying the `:te
 shadow-cljs watch dev test
 ```
 
-This will make test output available at `localhost:8001`. It's quite convenient to keep a separate browser tab open just for this. The favicon will be coloured green or red depending on the state of the assertions.
+This will make test output available at `localhost:8100`. It's quite convenient to keep a separate browser tab open just for this. The favicon will be coloured green or red depending on the state of the assertions.
 
 Personally, I use the Clojure CLI integration in Cursive to calculate a classpath and download dependencies. Something like this command is being executed behind the scenes:
 
