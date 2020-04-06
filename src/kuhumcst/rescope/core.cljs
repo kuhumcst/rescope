@@ -1,7 +1,7 @@
 (ns kuhumcst.rescope.core
   "Reagent components for integrating with the shadow DOM."
   (:require [clojure.string :as str]
-            [reagent.core :as r]
+            [reagent.dom :as rdom]
             [kuhumcst.rescope.interop :as interop]
             [kuhumcst.rescope.select :as select]))
 
@@ -27,7 +27,7 @@
   (fn [this]
     (when this
       (set! (.-shadow this) (.attachShadow this #js{:mode "open"}))
-      (r/render [comp this] (.-shadow this)))))
+      (rdom/render [comp this] (.-shadow this)))))
 
 (defn scope
   "Render `hiccup` inside a shadow DOM with the root element as the shadow host.

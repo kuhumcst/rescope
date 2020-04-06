@@ -1,7 +1,7 @@
 (ns user
   (:require [clojure.pprint :refer [pprint]]
             [shadow.resource :as resource]
-            [reagent.core :as r]
+            [reagent.dom :as rdom]
             [meander.epsilon :as m]
             [kuhumcst.rescope.formats.xml :as xml]
             [kuhumcst.rescope.hiccup :as hic]
@@ -133,7 +133,7 @@
 
 (defn ^:dev/after-load render
   []
-  (r/render [app] root))
+  (rdom/render [app] root))
 
 (defn start-dev
   []
