@@ -3,5 +3,5 @@
 
 (defn start
   []
-  (shadow/watch :dev)
-  (shadow/repl :dev))
+  (shadow/watch :app)
+  (shadow/repl :app))
