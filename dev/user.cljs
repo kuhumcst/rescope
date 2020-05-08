@@ -60,7 +60,8 @@
   (m/rewrite x
     [:list (m/or {:as ?attr}
                  (m/let [?attr {}])) .
-     [:item !x] ...]
+     ;; TODO: fix - only works on :item with exactly 1 piece of content
+     [:item {:as _} !x] ...]
     [:ul ?attr .
      [:li !x] ...]
 
@@ -75,7 +76,7 @@
   (when hiccup
     (fn [this] hiccup)))
 
-(def injector
+(def meander-injector
   (comp hiccup->comp meander-rewrite*))
 
 (defonce css-href
@@ -87,7 +88,7 @@
         hiccup     (-> (xml/parse tei-example)
                        (hic/postprocess {:prefix    "tei"
                                          :attr-kmap attr-kmap
-                                         :injector  injector}))
+                                         :injectors [meander-injector]}))
         teiheader  (select/one hiccup (select/element :tei-teiheader))
         facsimile  (select/one hiccup (select/element :tei-facsimile))
         text       (select/one hiccup (select/element :tei-text))

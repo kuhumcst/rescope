@@ -47,9 +47,13 @@
 
 ;; Only modifies metadata. Later this is merged into attr by meta-into-attr.
 (defn- inject
-  "Insert shadow roots with components based on matches from `injector`."
-  [injector [[tag attr & content :as node] _ :as loc]]
-  (if-let [comp (injector node)]
+  "Insert shadow roots with components based on matches from the `injectors`."
+  [injectors [[tag attr & content :as node] _ :as loc]]
+  ;; TODO: unsure if lazyness is preserved - should it be a transducer?
+  (if-let [comp (->> injectors
+                     (map (fn [injector] (injector node)))
+                     (remove nil?)
+                     (first))]
     (zip/edit loc assoc-meta :ref (rescope/shadow-ref comp))
     loc))
 
@@ -78,9 +82,9 @@
 
 ;; NOTE: all edits *must* preserve node metadata!
 (defn- edit-branch
-  [prefix attr-kmap injector loc]
+  [prefix attr-kmap injectors loc]
   (->> loc
-       (inject injector)
+       (inject injectors)
        (attr->data-attr)
        (rename-attr attr-kmap)                              ; TODO: remove?
        (add-prefix prefix)
@@ -99,23 +103,23 @@
   The hiccup structure is trimmed and the `prefix` is applied to all element
   tags in the tree. Attributes are renamed according to `attr-kmap` or converted
   into the data-* format. Finally, shadow roots are inserted based on the
-  `injector`, the HTML now being rendered by replacement components."
-  ([hiccup {:keys [prefix attr-kmap injector]
+  `injectors`, the HTML now being rendered by replacement components."
+  ([hiccup {:keys [prefix attr-kmap injectors]
             :or   {prefix    "rescope"
                    attr-kmap {}
-                   injector  (constantly nil)}
+                   injectors []}
             :as   opts}]
    ;; The way hiccup zips, every branch is a hiccup vector, while everything
-   ;; else is a leaf. Leafs are strings, but can be other types too.
-   (let [postprocess* (fn [[node _ :as loc]]
-                        (if (vector? node)
-                          (edit-branch prefix attr-kmap injector loc)
-                          (edit-leaf loc)))]
+   ;; else is a leaf. Leafs are usually strings, but can be other types too.
+   (let [edit-node (fn [[node _ :as loc]]
+                     (if (vector? node)
+                       (edit-branch prefix attr-kmap injectors loc)
+                       (edit-leaf loc)))]
      (loop [loc (hzip/hiccup-zip hiccup)]
        (if (zip/end? loc)
          (zip/root loc)
          (recur (zip/next (if (ignore? loc)
                             loc
-                            (postprocess* loc))))))))
+                            (edit-node loc))))))))
   ([hiccup]
    (postprocess hiccup nil)))
