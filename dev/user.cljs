@@ -5,6 +5,7 @@
             [meander.epsilon :as m]
             [kuhumcst.rescope.formats.xml :as xml]
             [kuhumcst.rescope.hiccup :as hic]
+            [kuhumcst.rescope.cuphic :as cup]
             [kuhumcst.rescope.select :as select]
             [kuhumcst.rescope.style :as style]
             [kuhumcst.rescope.interop :as interop]
@@ -79,6 +80,15 @@
 (def meander-injector
   (comp hiccup->comp meander-rewrite*))
 
+;; TODO: not working - see whitespace todo in hiccup ns
+(def cuphic-rewrite
+  (cup/transformer {:from '[:pb {:n    ?n
+                                 :facs ?facs}]
+                    :to   '[:div "TEST"]}))
+
+(def cuphic-injector
+  (comp hiccup->comp cuphic-rewrite))
+
 (defonce css-href
   (interop/auto-revoked (atom nil)))
 
@@ -88,7 +98,8 @@
         hiccup     (-> (xml/parse tei-example)
                        (hic/postprocess {:prefix    "tei"
                                          :attr-kmap attr-kmap
-                                         :injectors [meander-injector]}))
+                                         :injectors [meander-injector
+                                                     cuphic-injector]}))
         teiheader  (select/one hiccup (select/element :tei-teiheader))
         facsimile  (select/one hiccup (select/element :tei-facsimile))
         text       (select/one hiccup (select/element :tei-text))

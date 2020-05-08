@@ -112,6 +112,8 @@
    ;; The way hiccup zips, every branch is a hiccup vector, while everything
    ;; else is a leaf. Leafs are usually strings, but can be other types too.
    (let [edit-node (fn [[node _ :as loc]]
+                     ;; TODO: remove whitespace before zipping or at least handle leafs first
+                     ;; currently whitespace is interfering with pattern matching!
                      (if (vector? node)
                        (edit-branch prefix attr-kmap injectors loc)
                        (edit-leaf loc)))]

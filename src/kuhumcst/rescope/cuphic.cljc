@@ -3,6 +3,7 @@
   (:require [clojure.spec.alpha :as s]
             [clojure.walk :as walk]
             [clojure.zip :as zip]
+            [clojure.string :as str]
             [lambdaisland.deep-diff2 :as dd]
             #?(:clj  [lambdaisland.deep-diff2.diff-impl]
                :cljs [lambdaisland.deep-diff2.diff-impl :refer [Mismatch
@@ -15,98 +16,80 @@
                                                  Deletion
                                                  Insertion])))
 
-;; TODO: mk-injector?
 ;; TODO: some way to handle variable length matches, e.g. using `...` symbol?
 
 
-;; An insertion point for a logic variable, represented by symbols in cuphic.
+(s/def ::logic-variable
+  (s/and symbol?
+         (comp #(str/starts-with? % "?") name)))
+
+;; A possible insertion point for logic variables (represented by symbols).
 ;; Cannot be used in place of collections, e.g. hiccup vectors or attr maps!
-(s/def ::?var
+(s/def ::slot
   (s/or
-    :symbol symbol?
+    :var ::logic-variable
     :other (complement coll?)))
 
 (s/def ::attr
   (s/map-of keyword? (s/or
-                       :?var ::?var
+                       :slot ::slot
                        :map ::attr)))
 
-;; https://stackoverflow.com/questions/39147258/clojure-spec-unform-returning-non-conforming-values
 (s/def ::cuphic
   (s/and vector?
          (s/conformer vec vec)                              ; unform as vector
          (s/cat
-           :tag ::?var
+           :tag ::slot
            :attr (s/? ::attr)
-           :content (s/* ::cuphic-content))))
-
-(s/def ::cuphic-content
-  (s/or
-    :cuphic ::cuphic
-    :other (complement map?)))
+           :content (s/* (s/or
+                           :cuphic ::cuphic
+                           :other (complement map?))))))
 
 (defn vector-map-zip
-  "In addition to zipping through vectors, also zips maps."
+  "Also zips maps in addition to zipping vectors."
   [root]
   (zip/zipper (some-fn vector? (every-pred map? (complement record?)))
               seq
               (fn [node children] (with-meta (vec children) (meta node)))
               root))
 
-;; TODO: rewrite and put in docstring?
-;; First, ensure that only valid cuphic is supplied, i.e. no symbols in wrong
-;; places?
-;; Then, the basic algorithm
-;; * zip through data structure
-;; * look for vector of deep diff records
-;; * ignore Insertion? for maps (attr)
-;;    - ... or to put it another way, only allow Insertion of keywords, not vectors or other types?
-;; * abort on Deletion
-;; * abort on Mismatches where :- is not a symbol
-;; * collect Mismatches where :- is a symbol
-;; * make it into a mapping variable->value
+;; The diffing algorithm doesn't work well for vectors of dissimilar shape,
+;; turning mismatches into pairs of Deletions and Insertions instead.
+(defn resemble
+  "Check that the shapes of `cuphic` and `hiccup` resemble each other."
+  [cuphic hiccup]
+  (let [coerce-shape #(if (vector? %) % (empty %))]
+    (= (walk/postwalk coerce-shape cuphic)
+       (walk/postwalk coerce-shape hiccup))))
 
 (defn logic-vars
   "Get the symbol->value mapping found when comparing `hiccup` to `cuphic`.
-  Returns nil if the hiccup does not match the cuphic."
+  Returns nil if the hiccup does not match the cuphic.
+
+  Relies on the data structure created by deep-diff2. The presence of a Mismatch
+  record indicates a matching logic variable if the replaced value is a symbol.
+  Deletions are always problematic; as are Insertions, unless they happen to be
+  new HTML attributes."
   [cuphic hiccup]
-  ;; TODO: make this check recursively... somehow? assumption breaks otherwise
-  ;; The diffing algorithm doesn't work well for vectors of dissimilar length,
-  ;; turning mismatches into pairs of Deletions and Insertions instead.
-  (when (and (= (count cuphic)
-                (count hiccup)))
-
-    ;; Assert that logic variables are placed in compatible places.
-    ;; This assertion can be elided in production environments, assuming that
-    ;; the provided cuphic has already been tested during development.
-    (assert (s/valid? ::cuphic cuphic))
-
-    ;; Zipping through the data structure returned by the diff, every valid
-    ;; Mismatch is collected in a map. The loop will only recur as long as it
-    ;; doesn't run into any clear incompatibilities.
+  (assert (s/valid? ::cuphic cuphic))                       ; elide in prod
+  (when (resemble cuphic hiccup)
     (let [diffs (dd/diff cuphic hiccup)]
-      (loop [loc        (vector-map-zip diffs)
-             mismatches {}]
+      (loop [loc      (vector-map-zip diffs)
+             bindings {}]
         (let [node (zip/node loc)]
-          (when-not (instance? Deletion node)               ;; abort early
+          (when-not (instance? Deletion node)               ; fail fast
             (cond
-              (zip/end? loc) mismatches
+              (zip/end? loc) bindings
 
               ;; TODO: what about randomly inserted keywords not in a map?
-              ;; Ignore insertions of keywords. Abort otherwise.
               (instance? Insertion node) (when (keyword? (:+ node))
-                                           (recur (zip/next loc)
-                                                  mismatches))
+                                           (recur (zip/next loc) bindings))
 
-              ;; Only logical variable "mismatches" are allowed.
-              ;; Any other mismatches should not be allowed, e.g. :p -> :a.
               (instance? Mismatch node) (when (symbol? (:- node))
-                                          (recur (zip/next loc)
-                                                 (assoc mismatches (:- node)
-                                                                   (:+ node))))
-
-              :else (recur (zip/next loc)
-                           mismatches))))))))
+                                          (recur (zip/next loc) (assoc bindings
+                                                                  (:- node)
+                                                                  (:+ node))))
+              :else (recur (zip/next loc) bindings))))))))
 
 (defn transform
   "Transform hiccup using cuphic from/to templates.
@@ -114,12 +97,13 @@
   Substitutes logic variables in `to` with values found in `hiccup` based on
   logic variables in `from`."
   [from to hiccup]
-  (let [symbol->value (logic-vars from hiccup)]
-    (walk/postwalk (fn [x]
-                     (if-let [replacement (symbol->value x)]
-                       replacement
-                       x))
-                   to)))
+  (when-let [symbol->value (logic-vars from hiccup)]
+    (walk/postwalk #(or (symbol->value %) %) to)))
+
+(defn transformer
+  "Make a transform fn to transform hiccup using cuphic from/to templates."
+  [{:keys [from to]}]
+  (partial transform from to))
 
 (comment
   ;; Invalid example
@@ -163,6 +147,23 @@
                        [:p {} "p1"]
                        [:p {} "p2"]])
 
-  (keyword? ?sdsd)
+
+  (resemble '[a b c] [1 2 3])
+  (logic-vars '[a b c] [1 2 3])
+
+  ;; Walk/zip through both structures, replacing every vector with a new vector
+  ;; where every non-vector item is `(empty x)` and then just check equality.
+  (walk/postwalk-demo [[1 2 3] 4 5])
+  (walk/postwalk #(if (vector? %) % (empty %))
+                 '[:div {:style "class"
+                         :id    "id"}
+                   [:p {:on-click do-stuff}
+                    "text"]
+                   [:p "more text" 1 2 3]
+                   [:p "text"
+                    [:span "x"]
+                    [:em "y"]]])
+
+
   #_.)
 
