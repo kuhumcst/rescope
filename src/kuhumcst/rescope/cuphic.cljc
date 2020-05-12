@@ -62,6 +62,10 @@
     (= (walk/postwalk coerce-shape cuphic)
        (walk/postwalk coerce-shape hiccup))))
 
+;; Check if a keyword Insertion is inside a map.
+(def ^:private loc-in-map?
+  (comp map? zip/node zip/up zip/up))
+
 (defn logic-vars
   "Get the symbol->value mapping found when comparing `hiccup` to `cuphic`.
   Returns nil if the hiccup does not match the cuphic.
@@ -81,8 +85,9 @@
             (cond
               (zip/end? loc) bindings
 
-              ;; TODO: what about randomly inserted keywords not in a map?
-              (instance? Insertion node) (when (keyword? (:+ node))
+              ;; TODO: remove `loc-in-map?`? unnecessary with `resemble`
+              (instance? Insertion node) (when (and (keyword? (:+ node))
+                                                    (loc-in-map? loc))
                                            (recur (zip/next loc) bindings))
 
               (instance? Mismatch node) (when (symbol? (:- node))
