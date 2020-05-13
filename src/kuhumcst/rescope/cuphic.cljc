@@ -101,10 +101,15 @@
   "Transform hiccup using cuphic from/to templates.
 
   Substitutes logic variables in `to` with values found in `hiccup` based on
-  logic variables in `from`."
+  logic variables in `from`. The cuphic templates can also be replaced with
+  functions that either produce or consume a symbol->value map. "
   [from to hiccup]
-  (when-let [symbol->value (logic-vars from hiccup)]
-    (walk/postwalk #(or (symbol->value %) %) to)))
+  (when-let [symbol->value (if (fn? from)
+                             (from hiccup)
+                             (logic-vars from hiccup))]
+    (if (fn? to)
+      (to symbol->value)
+      (walk/postwalk #(or (symbol->value %) %) to))))
 
 (defn transformer
   "Make a transform fn to transform hiccup using cuphic from/to templates."
@@ -142,6 +147,21 @@
              '[:div
                [?tag {:style {:width ?width}}]
                [:p "width: " ?width]]
+
+             [:span {:style {:width  "5px"
+                             :height "10px"}}
+              [:p {} "p1"]
+              [:p {} "p2"]])
+
+  ;; Valid transformation using an fn as "to" template
+  (transform '[?tag {:style {:width ?width}}
+               [_ {} "p1"]
+               [_ {} "p2"]]
+
+             (fn [{:syms [?tag ?width]}]
+               [:div
+                [?tag {:style {:width ?width}}]
+                [:p "width: " ?width]])
 
              [:span {:style {:width  "5px"
                              :height "10px"}}
