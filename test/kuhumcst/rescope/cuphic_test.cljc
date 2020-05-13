@@ -27,6 +27,12 @@
      [?span "x"]
      [:em "y"]]])
 
+(def symbol->value
+  '{?div   :div
+    ?class "class"
+    ?p     :p
+    ?span  :span})
+
 (deftest spec-validation
   (testing "slots (insertion points for symbols)"
     (is (= [:var '?logic-variable]
@@ -117,3 +123,41 @@
                               [:div {:class "class"
                                      :id    "id"}
                                "text"])))))
+
+(deftest logic-vars
+  (testing "basic mapping"
+    (is (= symbol->value
+           (cup/logic-vars complex-cuphic complex-hiccup)))))
+
+(deftest transform
+  (testing "preservation"
+    (is (= complex-hiccup
+           (cup/transform complex-cuphic
+                          complex-cuphic
+                          complex-hiccup))))
+
+  (testing "cuphic/cuphic transformation"
+    (is (= [:div [:p] [:span {:class "class"}]]
+           (cup/transform complex-cuphic
+                          '[?div [?p] [?span {:class ?class}]]
+                          complex-hiccup))))
+
+  (testing "fn/cuphic transformation"
+    (is (= [:div [:p] [:span {:class "class"}]]
+           (cup/transform (fn [hiccup] symbol->value)
+                          '[?div [?p] [?span {:class ?class}]]
+                          complex-hiccup))))
+
+  (testing "cuphic/fn transformation"
+    (is (= [:div [:p] [:span {:class "class"}]]
+           (cup/transform complex-cuphic
+                          (fn [{:syms [?div ?p ?span ?class]}]
+                            [?div [?p] [?span {:class ?class}]])
+                          complex-hiccup))))
+
+  (testing "fn/fn transformation"
+    (is (= [:div [:p] [:span {:class "class"}]]
+           (cup/transform (fn [hiccup] symbol->value)
+                          (fn [{:syms [?div ?p ?span ?class]}]
+                            [?div [?p] [?span {:class ?class}]])
+                          complex-hiccup)))))
