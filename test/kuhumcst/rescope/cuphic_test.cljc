@@ -3,7 +3,7 @@
             [clojure.spec.alpha :as s]
             [kuhumcst.rescope.cuphic :as cup]))
 
-(def complex-hiccup
+(def hiccup-example
   '[:div {:class "class"
           :id    "id"
           :style {:width  "10px"
@@ -15,9 +15,10 @@
      [:span "x"]
      [:em "y"]]])
 
-(def complex-cuphic
+;; Includes _ (ignored values), meaning it can only be a "from" template.
+(def from
   '[?div {:class ?class
-          :id    "id"
+          :id    _
           :style {:width  "10px"
                   :height "20px"}}
     [:p {:on-click do-stuff}
@@ -35,13 +36,16 @@
 
 (deftest spec-validation
   (testing "slots (insertion points for symbols)"
-    (is (= [:var '?logic-variable]
-           (s/conform ::cup/slot '?logic-variable)))
+    (is (= [:var '?var]
+           (s/conform ::cup/slot '?var)))
+    (is (= [:ignored '_ignored]
+           (s/conform ::cup/slot '_ignored)))
     (is (= [:other 'symbol]
            (s/conform ::cup/slot 'symbol)))
+
     (is (= [:other "string"]
            (s/conform ::cup/slot "string")))
-    (is (s/invalid? (s/conform ::cup/slot [:div]))))
+    (is (not (s/valid? ::cup/slot [:div]))))
 
   (testing "complex hiccup"
     (is (= '{:tag     [:other :div]
@@ -64,12 +68,12 @@
                                              :content [[:other "x"]]}]
                                    [:cuphic {:tag     [:other :em]
                                              :content [[:other "y"]]}]]}]]}
-           (s/conform ::cup/cuphic complex-hiccup))))
+           (s/conform ::cup/cuphic hiccup-example))))
 
   (testing "complex cuphic"
     (is (= '{:tag     [:var ?div]
              :attr    {:class [:slot [:var ?class]]
-                       :id    [:slot [:other "id"]]
+                       :id    [:slot [:ignored _]]
                        :style [:map {:width  [:slot [:other "10px"]]
                                      :height [:slot [:other "20px"]]}]}
              :content [[:cuphic {:tag     [:other :p]
@@ -87,11 +91,11 @@
                                              :content [[:other "x"]]}]
                                    [:cuphic {:tag     [:other :em]
                                              :content [[:other "y"]]}]]}]]}
-           (s/conform ::cup/cuphic complex-cuphic)))))
+           (s/conform ::cup/cuphic from)))))
 
 (deftest resemble
   (testing "complex hiccup"
-    (is (cup/same-shape? complex-hiccup
+    (is (cup/same-shape? hiccup-example
                          [nil {}
                           [nil {}
                            nil]
@@ -101,7 +105,7 @@
                            [nil nil]]])))
 
   (testing "complex cuphic"
-    (is (cup/same-shape? complex-cuphic
+    (is (cup/same-shape? from
                          [nil {}
                           [nil {}
                            nil]
@@ -127,37 +131,46 @@
 (deftest logic-vars
   (testing "basic mapping"
     (is (= symbol->value
-           (cup/logic-vars complex-cuphic complex-hiccup)))))
+           (cup/logic-vars from hiccup-example)))))
 
 (deftest transform
   (testing "preservation"
-    (is (= complex-hiccup
-           (cup/transform complex-cuphic
-                          complex-cuphic
-                          complex-hiccup))))
+    (is (= hiccup-example
+           (cup/transform from
+                          '[?div {:class ?class
+                                  :id    "id"
+                                  :style {:width  "10px"
+                                          :height "20px"}}
+                            [:p {:on-click do-stuff}
+                             "text"]
+                            [?p "more text" 1 2 3]
+                            [:p "text"
+                             [?span "x"]
+                             [:em "y"]]]
+                          hiccup-example))))
 
   (testing "cuphic/cuphic transformation"
     (is (= [:div [:p] [:span {:class "class"}]]
-           (cup/transform complex-cuphic
+           (cup/transform from
                           '[?div [?p] [?span {:class ?class}]]
-                          complex-hiccup))))
+                          hiccup-example))))
 
   (testing "fn/cuphic transformation"
     (is (= [:div [:p] [:span {:class "class"}]]
            (cup/transform (fn [hiccup] symbol->value)
                           '[?div [?p] [?span {:class ?class}]]
-                          complex-hiccup))))
+                          hiccup-example))))
 
   (testing "cuphic/fn transformation"
     (is (= [:div [:p] [:span {:class "class"}]]
-           (cup/transform complex-cuphic
+           (cup/transform from
                           (fn [{:syms [?div ?p ?span ?class]}]
                             [?div [?p] [?span {:class ?class}]])
-                          complex-hiccup))))
+                          hiccup-example))))
 
   (testing "fn/fn transformation"
     (is (= [:div [:p] [:span {:class "class"}]]
            (cup/transform (fn [hiccup] symbol->value)
                           (fn [{:syms [?div ?p ?span ?class]}]
                             [?div [?p] [?span {:class ?class}]])
-                          complex-hiccup)))))
+                          hiccup-example)))))

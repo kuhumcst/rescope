@@ -5,29 +5,32 @@
             [clojure.zip :as zip]
             [clojure.string :as str]
             [lambdaisland.deep-diff2 :as dd]
-            #?(:clj  [lambdaisland.deep-diff2.diff-impl]
-               :cljs [lambdaisland.deep-diff2.diff-impl :refer [Mismatch
+            #?(:cljs [lambdaisland.deep-diff2.diff-impl :refer [Mismatch
                                                                 Deletion
                                                                 Insertion]]))
-  ;; Explaining the conversion from dashes to underscores:
-  ;; https://stackoverflow.com/questions/4580462/cant-import-clojure-records
-  #?(:clj
-     (:import [lambdaisland.deep_diff2.diff_impl Mismatch
-                                                 Deletion
-                                                 Insertion])))
+  #?(:clj (:import [lambdaisland.deep_diff2.diff_impl Mismatch
+                                                      Deletion
+                                                      Insertion])))
 
 ;; TODO: some way to handle variable length matches, e.g. using `...` symbol?
 
 
-(s/def ::logic-variable
+;; Every symbol prepended with ? has a value captured in its place.
+(s/def ::var
   (s/and symbol?
-         (comp #(str/starts-with? % "?") name)))
+         (comp #(str/starts-with? % "?") name)))            ; CLJS needs name
 
-;; A possible insertion point for logic variables (represented by symbols).
+;; Everything prepended with _ is ignored.
+(s/def ::ignored
+  (s/and symbol?
+         (comp #(str/starts-with? % "_") name)))            ; CLJS needs name
+
+;; Possible insertion points for logic variables and other symbols.
 ;; Cannot be used in place of collections, e.g. hiccup vectors or attr maps!
 (s/def ::slot
   (s/or
-    :var ::logic-variable
+    :var ::var
+    :ignored ::ignored
     :other (complement coll?)))
 
 (s/def ::attr
@@ -63,6 +66,7 @@
       (= (walk/postwalk empty-hiccup cuphic)
          (walk/postwalk empty-hiccup hiccup)))))
 
+;; TODO: remove `loc-in-map?`? unnecessary with `resemble`
 ;; Check if a keyword Insertion is inside a map.
 (def ^:private loc-in-map?
   (comp map? zip/node zip/up zip/up))
@@ -84,17 +88,20 @@
         (let [node (zip/node loc)]
           (when-not (instance? Deletion node)               ; fail fast
             (cond
-              (zip/end? loc) bindings
+              (zip/end? loc)
+              bindings
 
-              ;; TODO: remove `loc-in-map?`? unnecessary with `resemble`
-              (instance? Insertion node) (when (and (keyword? (:+ node))
-                                                    (loc-in-map? loc))
-                                           (recur (zip/next loc) bindings))
+              (instance? Insertion node)
+              (when (and (keyword? (:+ node))
+                         (loc-in-map? loc))
+                (recur (zip/next loc) bindings))
 
-              (instance? Mismatch node) (when (symbol? (:- node))
-                                          (recur (zip/next loc) (assoc bindings
-                                                                  (:- node)
-                                                                  (:+ node))))
+              (instance? Mismatch node)
+              (when (symbol? (:- node))
+                (if (s/valid? ::var (:- node))
+                  (recur (zip/next loc) (assoc bindings (:- node) (:+ node)))
+                  (recur (zip/next loc) bindings)))
+
               :else (recur (zip/next loc) bindings))))))))
 
 (defn transform
@@ -109,7 +116,7 @@
                              (logic-vars from hiccup))]
     (if (fn? to)
       (to symbol->value)
-      (walk/postwalk #(or (symbol->value %) %) to))))
+      (walk/postwalk #(get symbol->value % %) to))))
 
 (defn transformer
   "Make a transform fn to transform hiccup using cuphic from/to templates."
@@ -172,6 +179,8 @@
   (s/valid? ::cuphic '[?tag {:style {?df ?width}}
                        [:p {} "p1"]
                        [:p {} "p2"]])
+
+  (s/conform ::cuphic '[?glen {:john _}])
 
 
   (same-shape? '[a b c] [1 2 3])
