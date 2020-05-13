@@ -105,9 +105,9 @@
 (defn transform
   "Transform hiccup using cuphic from/to templates.
 
-  Substitutes logic variables in `to` with values found in `hiccup` based on
-  logic variables in `from`. The cuphic templates can also be replaced with
-  functions that either produce or consume a symbol->value map. "
+  Substitutes symbols in `to` with bound values from `hiccup` based on symbols
+  in `from`. The cuphic templates can also be replaced with functions that
+  either produce or consume a symbol->value map. "
   [from to hiccup]
   (when-let [symbol->value (if (fn? from)
                              (from hiccup)

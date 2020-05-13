@@ -56,7 +56,7 @@
                            (reduced comp)))]
     (reduce-kv (matching-comp node) nil pred->comp)))
 
-(defn meander-rewrite*
+(defn meander-transformer
   [x]
   (m/rewrite x
     [:list (m/or {:as ?attr}
@@ -72,22 +72,11 @@
          :title (m/app da-type ?type)}
      [:slot]]))
 
-(defn hiccup->comp
-  [hiccup]
-  (when hiccup
-    (fn [this] hiccup)))
-
-(def meander-injector
-  (comp hiccup->comp meander-rewrite*))
-
 ;; TODO: not working - see whitespace todo in hiccup ns
-(def cuphic-rewrite
+(def cuphic-transformer
   (cup/transformer {:from '[:pb {:n    ?n
                                  :facs ?facs}]
                     :to   '[:div "TEST"]}))
-
-(def cuphic-injector
-  (comp hiccup->comp cuphic-rewrite))
 
 (defonce css-href
   (interop/auto-revoked (atom nil)))
@@ -98,8 +87,9 @@
         hiccup     (-> (xml/parse tei-example)
                        (hic/postprocess {:prefix    "tei"
                                          :attr-kmap attr-kmap
-                                         :injectors [meander-injector
-                                                     cuphic-injector]}))
+                                         :injectors (hic/injectors
+                                                      meander-transformer
+                                                      cuphic-transformer)}))
         teiheader  (select/one hiccup (select/element :tei-teiheader))
         facsimile  (select/one hiccup (select/element :tei-facsimile))
         text       (select/one hiccup (select/element :tei-text))

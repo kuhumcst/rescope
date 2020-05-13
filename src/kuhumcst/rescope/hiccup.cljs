@@ -125,3 +125,18 @@
                             (edit-node loc))))))))
   ([hiccup]
    (postprocess hiccup nil)))
+
+(defn transformer->injector
+  "Convert a `transformer` fn to an injector fn.
+
+  A transformer fn converts matching hiccup or otherwise returns nil.
+  The injector fn simply packages the hiccup as a reagent component."
+  [transformer]
+  (comp (fn [hiccup]
+          (when hiccup
+            (fn [this] hiccup))) transformer))
+
+(defn injectors
+  "Convert `transformers` to basic injectors."
+  [& transformers]
+  (map transformer->injector transformers))
