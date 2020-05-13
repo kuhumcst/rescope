@@ -26,7 +26,9 @@
   [comp]
   (fn [this]
     (when this
-      (set! (.-shadow this) (.attachShadow this #js{:mode "open"}))
+      ;; TODO: this extra check was suddenly necessary - investigate
+      (when (undefined? (.-shadow this))
+        (set! (.-shadow this) (.attachShadow this #js{:mode "open"})))
       (rdom/render [comp this] (.-shadow this)))))
 
 (defn scope

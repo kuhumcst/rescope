@@ -93,41 +93,6 @@
                                              :content [[:other "y"]]}]]}]]}
            (s/conform ::cup/cuphic from)))))
 
-(deftest resemble
-  (testing "complex hiccup"
-    (is (cup/same-shape? hiccup-example
-                         [nil {}
-                          [nil {}
-                           nil]
-                          [nil nil nil nil nil]
-                          [nil nil
-                           [nil nil]
-                           [nil nil]]])))
-
-  (testing "complex cuphic"
-    (is (cup/same-shape? from
-                         [nil {}
-                          [nil {}
-                           nil]
-                          [nil nil nil nil nil]
-                          [nil nil
-                           [nil nil]
-                           [nil nil]]])))
-
-  (testing "legal insertion (attr)"
-    (is (cup/same-shape? [:div {:class "class"
-                                :id    "id"}]
-                         '[:div {:class    "class"
-                                 :id       "id"
-                                 :on-click do-stuff}])))
-
-  (testing "illegal insertion (content)"
-    (is (not (cup/same-shape? [:div {:class "class"
-                                     :id    "id"}]
-                              [:div {:class "class"
-                                     :id    "id"}
-                               "text"])))))
-
 (deftest bindings
   (testing "basic symbol->value bindings"
     (is (= symbol->value

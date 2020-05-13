@@ -4,6 +4,7 @@
             [clojure.walk :as walk]
             [clojure.zip :as zip]
             [clojure.string :as str]
+            [hickory.zip :as hzip]
             [lambdaisland.deep-diff2 :as dd]
             #?(:cljs [lambdaisland.deep-diff2.diff-impl :refer [Mismatch
                                                                 Deletion
@@ -38,6 +39,7 @@
                        :slot ::slot
                        :map ::attr)))
 
+;; Conforms to a superset of regular hiccup.
 (s/def ::cuphic
   (s/and vector?
          (s/conformer vec vec)                              ; unform as vector
@@ -56,51 +58,91 @@
               (fn [node children] (with-meta (vec children) (meta node)))
               root))
 
-;; The diffing algorithm doesn't work well for vectors of dissimilar shape,
-;; turning mismatches into pairs of Deletions and Insertions instead.
-(defn same-shape?
-  "Do the shapes of the `cuphic` and the `hiccup` resemble each other?"
-  [cuphic hiccup]
-  (let [empty-hiccup #(if (vector? %) % (empty %))]
-    (when (= (count cuphic) (count hiccup))                 ; for performance
-      (= (walk/postwalk empty-hiccup cuphic)
-         (walk/postwalk empty-hiccup hiccup)))))
-
-;; TODO: remove `loc-in-map?`? unnecessary with `resemble`
+;; TODO: unnecessary? remove?
 ;; Check if a keyword Insertion is inside a map.
 (def ^:private loc-in-map?
   (comp map? zip/node zip/up zip/up))
 
+;; TODO: replace brittle deep-diff2, sometimes different diffs in clj vs. cljs
+(defn- attr-bindings
+  "Get the symbol->value mapping found when comparing `cattr` to `hattr`.
+  Returns nil if the two attrs don't match."
+  [cattr hattr]
+  (let [diffs (dd/diff cattr hattr)]
+    (loop [loc (vector-map-zip diffs)
+           ret {}]
+      (if (zip/end? loc)
+        ret
+        (let [{:keys [+ -] :as node} (zip/node loc)]
+          (condp instance? node
+            Deletion
+            nil
+
+            ;; Insertions are problematic unless they are HTML attributes.
+            Insertion
+            (when (and (keyword? +)
+                       (loc-in-map? loc))
+              (recur (zip/next loc) ret))
+
+            ;; Mismatches can indicate matching logic variables.
+            Mismatch
+            (when (symbol? -)
+              (if (s/valid? ::var -)
+                (recur (zip/next loc) (assoc ret - +))
+                (recur (zip/next loc) ret)))
+
+            (recur (zip/next loc) ret)))))))
+
+(defn- hicv
+  "Helper function for normalised destructuring of a hiccup-vector `v`."
+  [v]
+  (if (map? (second v))
+    v
+    (into [(first v) {}] (rest v))))
+
+(defn- bindings-delta
+  "Get a delta of the local bindings as map by comparing `cloc` to `hloc`.
+  Will return nil if the two nodes do not match."
+  [[cnode _ :as cloc] [hnode _ :as hloc]]
+  (cond
+    (and (vector? cnode)
+         (vector? hnode)) (cond
+                            ;; Fail fast. Nil will bubble up and exit the loop.
+                            (not= (count cnode)
+                                  (count hnode)) nil
+
+                            ;; Nothing of interest to collect.
+                            (= cnode hnode) {}
+
+                            ;; Find potential local bindings in tag and attr.
+                            :else
+                            (let [[ctag cattr] (hicv cnode)
+                                  [htag hattr] (hicv hnode)]
+                              (merge
+                                (when (s/valid? ::var ctag)
+                                  {ctag htag})
+                                (attr-bindings cattr hattr))))
+
+    ; TODO: handle leafs?
+    (and (not (vector? cnode))
+         (not (vector? cnode))) {}))
+
 (defn bindings
-  "Get the symbol->value mapping found when comparing `hiccup` to `cuphic`.
-  Returns nil if the hiccup does not match the cuphic."
+  "Get the symbol->value mapping found when comparing `cuphic` to `hiccup`.
+  Returns nil if the hiccup does not match the cuphic.
+
+  The two data structures are zipped through in parallel while their bindings
+  are collected incrementally."
   [cuphic hiccup]
   (assert (s/valid? ::cuphic cuphic))                       ; elide in prod
-  (when (same-shape? cuphic hiccup)
-    (let [diffs (dd/diff cuphic hiccup)]
-      (loop [loc (vector-map-zip diffs)
-             ret {}]
-        (if (zip/end? loc)
-          ret
-          (let [{:keys [+ -] :as node} (zip/node loc)]
-            (condp instance? node
-              Deletion
-              nil
-
-              ;; Insertions are problematic unless they are HTML attributes.
-              Insertion
-              (when (and (keyword? +)
-                         (loc-in-map? loc))
-                (recur (zip/next loc) ret))
-
-              ;; Mismatches can indicate matching logic variables.
-              Mismatch
-              (when (symbol? -)
-                (if (s/valid? ::var -)
-                  (recur (zip/next loc) (assoc ret - +))
-                  (recur (zip/next loc) ret)))
-
-              (recur (zip/next loc) ret))))))))
+  (when (= (count cuphic) (count hiccup))                   ; for performance
+    (loop [cloc (hzip/hiccup-zip cuphic)
+           hloc (hzip/hiccup-zip hiccup)
+           ret  {}]
+      (if (zip/end? cloc)
+        ret
+        (when-let [delta (bindings-delta cloc hloc)]
+          (recur (zip/next cloc) (zip/next hloc) (merge ret delta)))))))
 
 (defn transform
   "Transform hiccup using cuphic from/to templates.
@@ -172,26 +214,6 @@
   (s/valid? ::cuphic '[?tag {:style {?df ?width}}
                        [:p {} "p1"]
                        [:p {} "p2"]])
-
-  (s/conform ::cuphic '[?glen {:john _}])
-
-
-  (same-shape? '[a b c] [1 2 3])
-  (bindings '[?a _b c] [1 2 3])
-
-  ;; Walk/zip through both structures, replacing every vector with a new vector
-  ;; where every non-vector item is `(empty x)` and then just check equality.
-  (walk/postwalk-demo [[1 2 3] 4 5])
-  (walk/postwalk #(if (vector? %) % (empty %))
-                 '[:div {:style "class"
-                         :id    "id"}
-                   [:p {:on-click do-stuff}
-                    "text"]
-                   [:p "more text" 1 2 3]
-                   [:p "text"
-                    [:span "x"]
-                    [:em "y"]]])
-
 
   #_.)
 
