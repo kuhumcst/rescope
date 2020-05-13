@@ -55,12 +55,13 @@
 
 ;; The diffing algorithm doesn't work well for vectors of dissimilar shape,
 ;; turning mismatches into pairs of Deletions and Insertions instead.
-(defn resemble
-  "Check that the shapes of `cuphic` and `hiccup` resemble each other."
+(defn same-shape?
+  "Do the shapes of the `cuphic` and the `hiccup` resemble each other?"
   [cuphic hiccup]
-  (let [coerce-shape #(if (vector? %) % (empty %))]
-    (= (walk/postwalk coerce-shape cuphic)
-       (walk/postwalk coerce-shape hiccup))))
+  (let [empty-hiccup #(if (vector? %) % (empty %))]
+    (when (= (count cuphic) (count hiccup))                 ; for performance
+      (= (walk/postwalk empty-hiccup cuphic)
+         (walk/postwalk empty-hiccup hiccup)))))
 
 ;; Check if a keyword Insertion is inside a map.
 (def ^:private loc-in-map?
@@ -76,7 +77,7 @@
   new HTML attributes."
   [cuphic hiccup]
   (assert (s/valid? ::cuphic cuphic))                       ; elide in prod
-  (when (resemble cuphic hiccup)
+  (when (same-shape? cuphic hiccup)
     (let [diffs (dd/diff cuphic hiccup)]
       (loop [loc      (vector-map-zip diffs)
              bindings {}]
@@ -153,7 +154,7 @@
                        [:p {} "p2"]])
 
 
-  (resemble '[a b c] [1 2 3])
+  (same-shape? '[a b c] [1 2 3])
   (logic-vars '[a b c] [1 2 3])
 
   ;; Walk/zip through both structures, replacing every vector with a new vector

@@ -85,35 +85,35 @@
 
 (deftest resemble
   (testing "complex hiccup"
-    (is (cup/resemble complex-hiccup
-                      [nil {}
-                       [nil {}
-                        nil]
-                       [nil nil nil nil nil]
-                       [nil nil
-                        [nil nil]
-                        [nil nil]]])))
+    (is (cup/same-shape? complex-hiccup
+                         [nil {}
+                          [nil {}
+                           nil]
+                          [nil nil nil nil nil]
+                          [nil nil
+                           [nil nil]
+                           [nil nil]]])))
 
   (testing "complex cuphic"
-    (is (cup/resemble complex-cuphic
-                      [nil {}
-                       [nil {}
-                        nil]
-                       [nil nil nil nil nil]
-                       [nil nil
-                        [nil nil]
-                        [nil nil]]])))
+    (is (cup/same-shape? complex-cuphic
+                         [nil {}
+                          [nil {}
+                           nil]
+                          [nil nil nil nil nil]
+                          [nil nil
+                           [nil nil]
+                           [nil nil]]])))
 
   (testing "legal insertion (attr)"
-    (is (cup/resemble [:div {:class "class"
-                             :id    "id"}]
-                      '[:div {:class    "class"
-                              :id       "id"
-                              :on-click do-stuff}])))
+    (is (cup/same-shape? [:div {:class "class"
+                                :id    "id"}]
+                         '[:div {:class    "class"
+                                 :id       "id"
+                                 :on-click do-stuff}])))
 
   (testing "illegal insertion (content)"
-    (is (not (cup/resemble [:div {:class "class"
-                                  :id    "id"}]
-                           [:div {:class "class"
-                                  :id    "id"}
-                            "text"])))))
+    (is (not (cup/same-shape? [:div {:class "class"
+                                     :id    "id"}]
+                              [:div {:class "class"
+                                     :id    "id"}
+                               "text"])))))
