@@ -5,7 +5,6 @@
             [meander.epsilon :as m]
             [kuhumcst.rescope.formats.xml :as xml]
             [kuhumcst.rescope.hiccup :as hic]
-            [kuhumcst.rescope.cuphic :as cup]
             [kuhumcst.rescope.select :as select]
             [kuhumcst.rescope.style :as style]
             [kuhumcst.rescope.interop :as interop]
@@ -74,7 +73,7 @@
 
 ;; TODO: not working - see whitespace todo in hiccup ns
 (def cuphic-transformer
-  (cup/transformer {:from '[:pb {:n    ?n
+  (hic/transformer {:from '[:pb {:n    ?n
                                  :facs ?facs}]
                     :to   '[:div "TEST"]}))
 

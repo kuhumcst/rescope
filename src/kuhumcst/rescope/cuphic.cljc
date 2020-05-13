@@ -116,11 +116,6 @@
       (to symbol->value)
       (walk/postwalk #(get symbol->value % %) to))))
 
-(defn transformer
-  "Make a transform fn to transform hiccup using cuphic from/to templates."
-  [{:keys [from to]}]
-  (partial transform from to))
-
 (comment
   ;; Invalid example
   (bindings '[?tag {:style

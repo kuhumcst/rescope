@@ -5,7 +5,8 @@
             [clojure.zip :as zip]
             [hickory.zip :as hzip]
             [kuhumcst.rescope.util :as util]
-            [kuhumcst.rescope.core :as rescope]))
+            [kuhumcst.rescope.core :as rescope]
+            [kuhumcst.rescope.cuphic :as cup]))
 
 (defn- trim-str
   "Remove any blank strings from a string node `loc`."
@@ -37,7 +38,7 @@
 (defn- rename-attr
   "Rename attr keys according to `kmap`."
   [kmap [[tag attr & content :as node] _ :as loc]]
-  (if (map? attr)
+  (if (and kmap (map? attr))
     (zip/edit loc assoc 1 (set/rename-keys attr (as-data-* kmap)))
     loc))
 
@@ -50,10 +51,14 @@
   "Insert shadow roots with components based on matches from the `injectors`."
   [injectors [[tag attr & content :as node] _ :as loc]]
   ;; TODO: unsure if lazyness is preserved - should it be a transducer?
-  (if-let [comp (->> injectors
-                     (map (fn [injector] (injector node)))
-                     (remove nil?)
-                     (first))]
+  (if-let [comp (some->> injectors
+                         (map (fn [injector]
+                                ;; TODO: actually handle ^:fragment case
+                                (if (:fragment (meta injector))
+                                  (injector node)
+                                  (injector node))))
+                         (remove nil?)
+                         (first))]
     (zip/edit loc assoc-meta :ref (rescope/shadow-ref comp))
     loc))
 
@@ -105,9 +110,7 @@
   into the data-* format. Finally, shadow roots are inserted based on the
   `injectors`, the HTML now being rendered by replacement components."
   ([hiccup {:keys [prefix attr-kmap injectors]
-            :or   {prefix    "rescope"
-                   attr-kmap {}
-                   injectors []}
+            :or   {prefix "rescope"}
             :as   opts}]
    ;; The way hiccup zips, every branch is a hiccup vector, while everything
    ;; else is a leaf. Leafs are usually strings, but can be other types too.
@@ -126,15 +129,25 @@
   ([hiccup]
    (postprocess hiccup nil)))
 
+(defn- fragment?
+  [from]
+  (and (vector? from)
+       (= :<> (first from))))
+
+(defn transformer
+  "Make a transform fn to transform hiccup using cuphic from/to templates."
+  [{:keys [from to]}]
+  (with-meta (partial cup/transform from to) {:fragment (fragment? from)}))
+
 (defn transformer->injector
-  "Convert a `transformer` fn to an injector fn.
+  "Convert a `transformer` to an injector fn.
 
   A transformer fn converts matching hiccup or otherwise returns nil.
   The injector fn simply packages the hiccup as a reagent component."
   [transformer]
-  (comp (fn [hiccup]
-          (when hiccup
-            (fn [this] hiccup))) transformer))
+  (with-meta (comp (fn [hiccup]
+                     (when hiccup
+                       (fn [this] hiccup))) transformer) (meta transformer)))
 
 (defn injectors
   "Convert `transformers` to basic injectors."
