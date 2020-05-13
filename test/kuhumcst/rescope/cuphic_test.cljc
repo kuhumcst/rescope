@@ -128,10 +128,10 @@
                                      :id    "id"}
                                "text"])))))
 
-(deftest logic-vars
-  (testing "basic mapping"
+(deftest bindings
+  (testing "basic symbol->value bindings"
     (is (= symbol->value
-           (cup/logic-vars from hiccup-example)))))
+           (cup/bindings from hiccup-example)))))
 
 (deftest transform
   (testing "preservation"

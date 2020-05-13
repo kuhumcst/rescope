@@ -71,38 +71,36 @@
 (def ^:private loc-in-map?
   (comp map? zip/node zip/up zip/up))
 
-(defn logic-vars
+(defn bindings
   "Get the symbol->value mapping found when comparing `hiccup` to `cuphic`.
-  Returns nil if the hiccup does not match the cuphic.
-
-  Relies on the data structure created by deep-diff2. The presence of a Mismatch
-  record indicates a matching logic variable if the replaced value is a symbol.
-  Deletions are always problematic; as are Insertions, unless they happen to be
-  new HTML attributes."
+  Returns nil if the hiccup does not match the cuphic."
   [cuphic hiccup]
   (assert (s/valid? ::cuphic cuphic))                       ; elide in prod
   (when (same-shape? cuphic hiccup)
     (let [diffs (dd/diff cuphic hiccup)]
-      (loop [loc      (vector-map-zip diffs)
-             bindings {}]
-        (let [node (zip/node loc)]
-          (when-not (instance? Deletion node)               ; fail fast
-            (cond
-              (zip/end? loc)
-              bindings
+      (loop [loc (vector-map-zip diffs)
+             ret {}]
+        (if (zip/end? loc)
+          ret
+          (let [{:keys [+ -] :as node} (zip/node loc)]
+            (condp instance? node
+              Deletion
+              nil
 
-              (instance? Insertion node)
-              (when (and (keyword? (:+ node))
+              ;; Insertions are problematic unless they are HTML attributes.
+              Insertion
+              (when (and (keyword? +)
                          (loc-in-map? loc))
-                (recur (zip/next loc) bindings))
+                (recur (zip/next loc) ret))
 
-              (instance? Mismatch node)
-              (when (symbol? (:- node))
-                (if (s/valid? ::var (:- node))
-                  (recur (zip/next loc) (assoc bindings (:- node) (:+ node)))
-                  (recur (zip/next loc) bindings)))
+              ;; Mismatches can indicate matching logic variables.
+              Mismatch
+              (when (symbol? -)
+                (if (s/valid? ::var -)
+                  (recur (zip/next loc) (assoc ret - +))
+                  (recur (zip/next loc) ret)))
 
-              :else (recur (zip/next loc) bindings))))))))
+              (recur (zip/next loc) ret))))))))
 
 (defn transform
   "Transform hiccup using cuphic from/to templates.
@@ -113,7 +111,7 @@
   [from to hiccup]
   (when-let [symbol->value (if (fn? from)
                              (from hiccup)
-                             (logic-vars from hiccup))]
+                             (bindings from hiccup))]
     (if (fn? to)
       (to symbol->value)
       (walk/postwalk #(get symbol->value % %) to))))
@@ -125,26 +123,26 @@
 
 (comment
   ;; Invalid example
-  (logic-vars '[?tag {:style
-                      ;; should fail here
-                      {?df ?width}}
-                [:p {} "p1"]
-                [:p {} "p2"]]
-              [:div {:style {:width  "5px"
-                             :height "10px"}}
-               [:p {} "p1"
-                ;; should fail here, but will not reach due to spec assert
-                [:glen]]
-               [:p {} "p2"]])
+  (bindings '[?tag {:style
+                    ;; should fail here
+                    {?df ?width}}
+              [:p {} "p1"]
+              [:p {} "p2"]]
+            [:div {:style {:width  "5px"
+                           :height "10px"}}
+             [:p {} "p1"
+              ;; should fail here, but will not reach due to spec assert
+              [:glen]]
+             [:p {} "p2"]])
 
   ;; Valid logic var extraction example
-  (logic-vars '[?tag {:style {:width ?width}}
-                [:p {} "p1"]
-                [:p {} "p2"]]
-              [:div {:style {:width  "5px"
-                             :height "10px"}}
-               [:p {} "p1"]
-               [:p {} "p2"]])
+  (bindings '[?tag {:style {:width ?width}}
+              [:p {} "p1"]
+              [:p {} "p2"]]
+            [:div {:style {:width  "5px"
+                           :height "10px"}}
+             [:p {} "p1"]
+             [:p {} "p2"]])
 
   ;; Valid transformation example
   (transform '[?tag {:style {:width ?width}}
@@ -184,7 +182,7 @@
 
 
   (same-shape? '[a b c] [1 2 3])
-  (logic-vars '[a b c] [1 2 3])
+  (bindings '[?a _b c] [1 2 3])
 
   ;; Walk/zip through both structures, replacing every vector with a new vector
   ;; where every non-vector item is `(empty x)` and then just check equality.
