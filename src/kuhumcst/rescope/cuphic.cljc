@@ -101,31 +101,46 @@
     (into [(first v) {}] (rest v))))
 
 (defn- bindings-delta
-  "Get a delta of the local bindings as map by comparing `cloc` to `hloc`.
+  "Get a delta of the local bindings as a map by comparing `cloc` to `hloc`.
   Will return nil if the two nodes do not match."
   [[cnode _ :as cloc] [hnode _ :as hloc]]
   (cond
+    ;; Skip directly to the next node.
+    (= cnode hnode)
+    {}
+
+    ;; Branches (vectors) are the real object of interest.
     (and (vector? cnode)
-         (vector? hnode)) (cond
-                            ;; Fail fast. Nil will bubble up and exit the loop.
-                            (not= (count cnode)
-                                  (count hnode)) nil
+         (vector? hnode))
+    (let [cv (hicv cnode)
+          hv (hicv hnode)]
+      (if (= (count cv)
+             (count hv))
+        ;; Return potential local bindings in tag and attr.
+        (let [[ctag cattr] cv
+              [htag hattr] hv]
+          (merge
+            (when (s/valid? ::var ctag)
+              {ctag htag})
+            (attr-bindings cattr hattr)))
 
-                            ;; Nothing of interest to collect.
-                            (= cnode hnode) {}
+        ;; TODO: handle variadic content here
+        ;; Fail fast. Nil will bubble up and exit the loop.
+        nil))
 
-                            ;; Find potential local bindings in tag and attr.
-                            :else
-                            (let [[ctag cattr] (hicv cnode)
-                                  [htag hattr] (hicv hnode)]
-                              (merge
-                                (when (s/valid? ::var ctag)
-                                  {ctag htag})
-                                (attr-bindings cattr hattr))))
-
-    ; TODO: handle leafs?
+    ;; TODO: what about strings?
+    ;; Leafs get skipped. They are handled as part of the content instead.
     (and (not (vector? cnode))
-         (not (vector? cnode))) {}))
+         (not (vector? cnode)))
+    {}))
+
+(defn- potential-match?
+  "Helper function for optimising performance."
+  [cuphic hiccup]
+  ;; Account for the fact that the attr map is optional.
+  (<= (dec (count hiccup))
+      (count cuphic)
+      (inc (count hiccup))))
 
 (defn bindings
   "Get the symbol->value mapping found when comparing `cuphic` to `hiccup`.
@@ -135,14 +150,20 @@
   are collected incrementally."
   [cuphic hiccup]
   (assert (s/valid? ::cuphic cuphic))                       ; elide in prod
-  (when (= (count cuphic) (count hiccup))                   ; for performance
+  (when (potential-match? cuphic hiccup)
     (loop [cloc (hzip/hiccup-zip cuphic)
            hloc (hzip/hiccup-zip hiccup)
            ret  {}]
-      (if (zip/end? cloc)
+      (if (zip/end? cloc)                                   ; TODO: ...and hloc?
         ret
         (when-let [delta (bindings-delta cloc hloc)]
           (recur (zip/next cloc) (zip/next hloc) (merge ret delta)))))))
+
+(defn matches
+  "Returns the match, if any, of `hiccup` to `cuphic`."
+  [cuphic hiccup]
+  (when (bindings cuphic hiccup)
+    hiccup))
 
 (defn transform
   "Transform hiccup using cuphic from/to templates.

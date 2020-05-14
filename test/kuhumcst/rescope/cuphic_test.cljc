@@ -96,7 +96,16 @@
 (deftest bindings
   (testing "basic symbol->value bindings"
     (is (= symbol->value
-           (cup/bindings from hiccup-example)))))
+           (cup/bindings from hiccup-example))))
+
+  (testing "without optional attr"
+    (is (= {'?tag :div}
+           (cup/bindings '[?tag "text"] [:div {:class "class"} "text"]))))
+
+  (testing "matches function (based on bindings)"
+    (is (= hiccup-example
+           (cup/matches from hiccup-example)))))
+
 
 (deftest transform
   (testing "preservation"
