@@ -59,6 +59,11 @@ brew install node
 npm install -g shadow-cljs
 ```
 
+Make sure that shadow-cljs can infer and install react-dom:
+```
+npm init
+```
+
 Workflow
 --------
 Development of the component is done using the live-reloading capabilities of shadow-cljs:

@@ -4,7 +4,7 @@
             [reagent.dom :as rdom]
             [meander.epsilon :as m]
             [kuhumcst.rescope.formats.xml :as xml]
-            [kuhumcst.rescope.hiccup :as hic]
+            [cuphic.core :as cup]
             [kuhumcst.rescope.select :as select]
             [kuhumcst.rescope.style :as style]
             [kuhumcst.rescope.interop :as interop]
@@ -52,9 +52,10 @@
 
 ;; TODO: not working - see whitespace todo in hiccup ns
 (def cuphic-transformer
-  (hic/transformer {:from '[:pb {:n    ?n
-                                 :facs ?facs}]
-                    :to   '[:div "TEST"]}))
+  (cup/transformer
+    :from '[:pb {:n    ?n
+                 :facs ?facs}]
+    :to '[:div "TEST"]))
 
 (defonce css-href
   (interop/auto-revoked (atom nil)))
@@ -63,7 +64,7 @@
   []
   (let [css        (style/prefix-css "tei" css-example)
         hiccup     (-> (xml/parse tei-example)
-                       (hic/rewrite {:prefix       "tei"
+                       (cup/rewrite {:prefix       "tei"
                                      :attr-kmap    attr-kmap
                                      :wrapper      rescope/shadow-wrapper
                                      :transformers [meander-transformer
