@@ -5,7 +5,6 @@
             [clojure.zip :as zip]
             [hickory.zip :as hzip]
             [kuhumcst.rescope.util :as util]
-            [kuhumcst.rescope.core :as rescope]
             [kuhumcst.rescope.cuphic :as cup]))
 
 (defn- trim-str
@@ -42,24 +41,20 @@
     (zip/edit loc assoc 1 (set/rename-keys attr (as-data-* kmap)))
     loc))
 
-(defn- assoc-meta
-  [o k v]
-  (with-meta o (assoc (meta o) k v)))
-
 ;; Only modifies metadata. Later this is merged into attr by meta-into-attr.
 (defn- inject
-  "Insert shadow roots with components based on matches from the `injectors`."
-  [injectors [[tag attr & content :as node] _ :as loc]]
-  ;; TODO: unsure if lazyness is preserved - should it be a transducer?
-  (if-let [comp (some->> injectors
-                         (map (fn [injector]
-                                ;; TODO: actually handle ^:fragment case
-                                (if (:fragment (meta injector))
-                                  (injector node)
-                                  (injector node))))
-                         (remove nil?)
-                         (first))]
-    (zip/edit loc assoc-meta :ref (rescope/shadow-ref comp))
+  "Insert transformed Hiccup when node `loc` matches one of the `transformers`.
+  A `wrapper` fn taking [old-node new-node] as args can be supplied to modify
+  the new node and its metadata. If no wrapper is supplied, the new node
+  entirely replaces the old node in the tree."
+  [wrapper transformers [[tag attr & content :as node] _ :as loc]]
+  (if-let [hiccup (->> (map #(% node) transformers)
+                       (remove nil?)
+                       (first))]
+    (let [new-node (if wrapper
+                     (wrapper node hiccup)
+                     (vary-meta hiccup assoc :replaced? true))]
+      (zip/replace loc new-node))
     loc))
 
 (defn- add-prefix
@@ -85,15 +80,21 @@
          (remove-comment))
     loc))
 
-;; NOTE: all edits *must* preserve node metadata!
+(defn- skip-subtree
+  "Skip the descendants of the current node."
+  [[node _ :as loc]]
+  (or (zip/right loc) (zip/rightmost loc)))
+
 (defn- edit-branch
-  [prefix attr-kmap injectors loc]
-  (->> loc
-       (inject injectors)
-       (attr->data-attr)
-       (rename-attr attr-kmap)                              ; TODO: remove?
-       (add-prefix prefix)
-       (meta-into-attr)))
+  [prefix attr-kmap wrapper transformers loc]
+  (let [loc* (inject wrapper transformers loc)]
+    (if (:replaced? (meta (zip/node loc*)))
+      (skip-subtree loc*)
+      (->> loc*
+           (attr->data-attr)
+           (rename-attr attr-kmap)
+           (add-prefix prefix)
+           (meta-into-attr)))))
 
 (defn- ignore?
   "Return true if it makes sense to ignore this loc."
@@ -101,15 +102,10 @@
   (and (vector? node)
        (= tag :<>)))                                        ; React fragments
 
-(defn postprocess
+(defn rewrite
   "Process relevant nodes of a zipper made from a `hiccup` tree based on `opts`.
-  Return the transformed structure as valid HTML with shadow DOM injections.
-
-  The hiccup structure is trimmed and the `prefix` is applied to all element
-  tags in the tree. Attributes are renamed according to `attr-kmap` or converted
-  into the data-* format. Finally, shadow roots are inserted based on the
-  `injectors`, the HTML now being rendered by replacement components."
-  ([hiccup {:keys [prefix attr-kmap injectors]
+  Return the transformed structure."
+  ([hiccup {:keys [prefix attr-kmap wrapper transformers]
             :or   {prefix "rescope"}
             :as   opts}]
    ;; The way hiccup zips, every branch is a hiccup vector, while everything
@@ -118,7 +114,7 @@
                      ;; TODO: remove whitespace before zipping or at least handle leafs first
                      ;; currently whitespace is interfering with pattern matching!
                      (if (vector? node)
-                       (edit-branch prefix attr-kmap injectors loc)
+                       (edit-branch prefix attr-kmap wrapper transformers loc)
                        (edit-leaf loc)))]
      (loop [loc (hzip/hiccup-zip hiccup)]
        (if (zip/end? loc)
@@ -127,29 +123,9 @@
                             loc
                             (edit-node loc))))))))
   ([hiccup]
-   (postprocess hiccup nil)))
-
-(defn- fragment?
-  [from]
-  (and (vector? from)
-       (= :<> (first from))))
+   (rewrite hiccup nil)))
 
 (defn transformer
   "Make a transform fn to transform hiccup using cuphic from/to templates."
   [{:keys [from to]}]
-  (with-meta (partial cup/transform from to) {:fragment (fragment? from)}))
-
-(defn transformer->injector
-  "Convert a `transformer` to an injector fn.
-
-  A transformer fn converts matching hiccup or otherwise returns nil.
-  The injector fn simply packages the hiccup as a reagent component."
-  [transformer]
-  (with-meta (comp (fn [hiccup]
-                     (when hiccup
-                       (fn [this] hiccup))) transformer) (meta transformer)))
-
-(defn injectors
-  "Convert `transformers` to basic injectors."
-  [& transformers]
-  (map transformer->injector transformers))
+  (partial cup/transform from to))

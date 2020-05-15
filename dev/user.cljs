@@ -34,27 +34,6 @@
    "receiver"   "Modtager"
    "sender"     "Afsender"})
 
-(def pred->comp
-  {(comp #{:tei-list} first) (fn [this]
-                               [:ul
-                                (for [child (array-seq (.-children this))]
-                                  [:li {:dangerouslySetInnerHTML {:__html (.-innerHTML child)}
-                                        :key                     (hash child)}])])
-   (comp :data-ref second)   (fn [this]
-                               (let [dataset   (.-dataset this)
-                                     href      (.-ref dataset)
-                                     href-type (da-type (.-type dataset))]
-                                 [:a {:href  href
-                                      :title href-type}
-                                  [:slot]]))})
-
-(defn algorithmic-rewrite
-  [node]
-  (let [matching-comp #(fn [_ pred comp]
-                         (when (pred %)
-                           (reduced comp)))]
-    (reduce-kv (matching-comp node) nil pred->comp)))
-
 (defn meander-transformer
   [x]
   (m/rewrite x
@@ -84,11 +63,11 @@
   []
   (let [css        (style/prefix-css "tei" css-example)
         hiccup     (-> (xml/parse tei-example)
-                       (hic/postprocess {:prefix    "tei"
-                                         :attr-kmap attr-kmap
-                                         :injectors (hic/injectors
-                                                      meander-transformer
-                                                      cuphic-transformer)}))
+                       (hic/rewrite {:prefix       "tei"
+                                     :attr-kmap    attr-kmap
+                                     :wrapper      rescope/shadow-wrapper
+                                     :transformers [meander-transformer
+                                                    cuphic-transformer]}))
         teiheader  (select/one hiccup (select/element :tei-teiheader))
         facsimile  (select/one hiccup (select/element :tei-facsimile))
         text       (select/one hiccup (select/element :tei-text))

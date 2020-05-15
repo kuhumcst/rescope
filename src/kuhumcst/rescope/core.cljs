@@ -5,15 +5,29 @@
             [kuhumcst.rescope.interop :as interop]
             [kuhumcst.rescope.select :as select]))
 
-;; TODO: only return custom tags, not normal HTML tags
+(def custom-tag
+  #"\w+(-\w+)+")
+
+;; https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name
+(def hyphen-tags
+  #{"annotation-xml"
+    "color-profile"
+    "font-face"
+    "font-face-src"
+    "font-face-uri"
+    "font-face-format"
+    "font-face-name"
+    "missing-glyph"})
+
 (defn hiccup->custom-tags
-  "Get a set of all tags (as strings) found in a `hiccup` tree."
+  "Get a set of all custom tags (as strings) found in a `hiccup` tree."
   [hiccup]
   (->> (select/all hiccup)
        (map (comp str/lower-case name first))
+       (remove hyphen-tags)
+       (filter (partial re-matches custom-tag))
        (set)))
 
-;; TODO: validate and only define actual custom element tags
 (defn define-elements!
   "Define custom HTML elements covering all `tags`."
   [tags]
@@ -30,6 +44,10 @@
       (when (undefined? (.-shadow this))
         (set! (.-shadow this) (.attachShadow this #js{:mode "open"})))
       (rdom/render [comp this] (.-shadow this)))))
+
+(defn shadow-wrapper
+  [old-node new-node]
+  (vary-meta old-node assoc :ref (shadow-ref (constantly new-node))))
 
 (defn scope
   "Render `hiccup` inside a shadow DOM with the root element as the shadow host.
