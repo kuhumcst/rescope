@@ -2,30 +2,16 @@
   "Reagent components for integrating with the shadow DOM."
   (:require [clojure.string :as str]
             [reagent.dom :as rdom]
+            [kuhumcst.rescope.util :as util]
             [kuhumcst.rescope.interop :as interop]
             [kuhumcst.rescope.select :as select]))
-
-(def custom-tag
-  #"\w+(-\w+)+")
-
-;; https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name
-(def hyphen-tags
-  #{"annotation-xml"
-    "color-profile"
-    "font-face"
-    "font-face-src"
-    "font-face-uri"
-    "font-face-format"
-    "font-face-name"
-    "missing-glyph"})
 
 (defn hiccup->custom-tags
   "Get a set of all custom tags (as strings) found in a `hiccup` tree."
   [hiccup]
   (->> (select/all hiccup)
        (map (comp str/lower-case name first))
-       (remove hyphen-tags)
-       (filter (partial re-matches custom-tag))
+       (filter util/valid-custom-tag?)
        (set)))
 
 (defn define-elements!
@@ -38,7 +24,7 @@
   "Get a :ref fn for a DOM element to render a given `comp` as its shadow root.
   The component should accept a single argument: the element's DOM reference."
   [comp]
-  (fn [this]
+  (fn [^js/Element this]
     (when this
       ;; TODO: this extra check was suddenly necessary - investigate
       (when (undefined? (.-shadow this))

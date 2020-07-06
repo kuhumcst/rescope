@@ -1,6 +1,6 @@
 (ns kuhumcst.rescope.style
   (:require [clojure.string :as str]
-            [cuphic.util :as util]))
+            [kuhumcst.rescope.util :as util]))
 
 (defn remove-comments
   "Remove comments from a piece of `css`."

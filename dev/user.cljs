@@ -5,25 +5,18 @@
             [meander.epsilon :as m]
             [kuhumcst.rescope.formats.xml :as xml]
             [cuphic.core :as cup]
+            [kuhumcst.rescope.helpers :as helpers]
             [kuhumcst.rescope.select :as select]
             [kuhumcst.rescope.style :as style]
             [kuhumcst.rescope.interop :as interop]
             [kuhumcst.rescope.core :as rescope]))
-
-;(interop/request {:url         "https://fonts.googleapis.com/css?family=Noto+Sans+HK&display=swap"
-;                  :on-progress (fn [e]
-;                                 (println (interop/event-data e)))})
-
 (def tei-example
   ;(resource/inline "examples/tei/1151anno-anno-tei.xml"))
   (resource/inline "examples/tei/tei_example.xml"))
+  ;(resource/inline "examples/tei/test-1307-anno-tei.xml"))
 
 (def css-example
   (resource/inline "examples/css/tei.css"))
-
-(def attr-kmap
-  {:xml:lang :lang
-   :xml:id   :id})
 
 (def da-type
   {"conference" "Konference"
@@ -50,25 +43,51 @@
          :title (m/app da-type ?type)}
      [:slot]]))
 
-;; TODO: not working - see whitespace todo in hiccup ns
-(def cuphic-transformer
+(def list-as-ul
   (cup/transformer
-    :from '[:pb {:n    ?n
-                 :facs ?facs}]
-    :to '[:div "TEST"]))
+    :from '[:list +items]
+    :to (fn [{:syms [+items]}]
+          (into [:ul] (for [[tag attr & content] +items]
+                        (into [:li] content))))))
+
+(def ref-as-anchor
+  (cup/transformer
+    :from '[? {:ref  ?ref
+               :type ?type} *]
+    :to (fn [{:syms [?ref ?type]}]
+          ;; TODO: bug in attr-bindings - now need to check for attr existence
+          (when ?ref
+            [:a {:href  ?ref
+                 :title (da-type ?type)}
+             [:slot]]))))
+
+(def wrap-pbs
+  (cup/transformer
+    :from '[:div * [:<> [:pb] +]]
+    :to (fn [{:syms [<>] :as bindings}]
+          (let [{:keys [begin end]} (meta <>)
+                source (:source (meta bindings))]
+            (vec (concat (subvec source 0 begin)
+                         [(into [:pbs] (subvec source begin end))]
+                         (subvec source end)))))))
 
 (defonce css-href
   (interop/auto-revoked (atom nil)))
+
+(def stages
+  [{:transformers [wrap-pbs]}
+   {:transformers [ref-as-anchor
+                   list-as-ul]
+    :wrapper      rescope/shadow-wrapper
+    :default      (helpers/default-fn {:attr-kmap {:xml:lang :lang
+                                                   :xml:id   :id}
+                                       :prefix    "tei"})}])
 
 (defn app
   []
   (let [css        (style/prefix-css "tei" css-example)
         hiccup     (-> (xml/parse tei-example)
-                       (cup/rewrite {:prefix       "tei"
-                                     :attr-kmap    attr-kmap
-                                     :wrapper      rescope/shadow-wrapper
-                                     :transformers [meander-transformer
-                                                    cuphic-transformer]}))
+                       (cup/rewrite stages))
         teiheader  (select/one hiccup (select/element :tei-teiheader))
         facsimile  (select/one hiccup (select/element :tei-facsimile))
         text       (select/one hiccup (select/element :tei-text))
