@@ -1,4 +1,4 @@
-(ns kuhumcst.rescope.formats.xml
+(ns rescope.formats.xml
   "Parse XML as hiccup."
   (:require [clojure.string :as str]
             [hickory.core :as hickory]

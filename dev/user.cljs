@@ -3,13 +3,13 @@
             [shadow.resource :as resource]
             [reagent.dom :as rdom]
             [meander.epsilon :as m]
-            [kuhumcst.rescope.formats.xml :as xml]
+            [rescope.formats.xml :as xml]
             [cuphic.core :as cup]
-            [kuhumcst.rescope.helpers :as helpers]
-            [kuhumcst.rescope.select :as select]
-            [kuhumcst.rescope.style :as style]
-            [kuhumcst.rescope.interop :as interop]
-            [kuhumcst.rescope.core :as rescope]))
+            [rescope.helpers :as helpers]
+            [rescope.select :as select]
+            [rescope.style :as style]
+            [rescope.interop :as interop]
+            [rescope.core :as rescope]))
 (def tei-example
   ;(resource/inline "examples/tei/1151anno-anno-tei.xml"))
   (resource/inline "examples/tei/tei_example.xml"))

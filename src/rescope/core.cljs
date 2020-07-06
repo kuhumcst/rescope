@@ -1,10 +1,10 @@
-(ns kuhumcst.rescope.core
+(ns rescope.core
   "Reagent components for integrating with the shadow DOM."
   (:require [clojure.string :as str]
             [reagent.dom :as rdom]
-            [kuhumcst.rescope.util :as util]
-            [kuhumcst.rescope.interop :as interop]
-            [kuhumcst.rescope.select :as select]))
+            [rescope.util :as util]
+            [rescope.interop :as interop]
+            [rescope.select :as select]))
 
 (defn hiccup->custom-tags
   "Get a set of all custom tags (as strings) found in a `hiccup` tree."

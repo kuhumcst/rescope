@@ -1,6 +1,6 @@
-(ns kuhumcst.rescope.helpers
+(ns rescope.helpers
   (:require [clojure.set :as set]
-            [kuhumcst.rescope.util :as util]))
+            [rescope.util :as util]))
 
 (defn as-data-*
   [attr]

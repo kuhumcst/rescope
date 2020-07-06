@@ -3,7 +3,7 @@
            reagent                   {:mvn/version "0.10.0"}
            hickory                   {:mvn/version "0.7.1"}
            kuhumcst/cuphic           {:git/url "https://github.com/kuhumcst/cuphic.git"
-                                      :sha     "6b611e2dad7733822f089ea9e9761b325cad0a0a"}}
+                                      :sha     "662b1733a786e19de8c34310ddd59b086c2f5ff0"}}
  :aliases {:app  {:extra-paths ["dev"]
                   :extra-deps  {thheller/shadow-cljs {:mvn/version "2.10.14"}
                                 meander/epsilon      {:mvn/version "0.0.469"}}}

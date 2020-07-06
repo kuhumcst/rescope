@@ -1,4 +1,4 @@
-(ns kuhumcst.rescope.interop
+(ns rescope.interop
   "Wrapping gnarly JS interop with the browser API in a smart way.
 
   NOTE: fns marked with ^:experimental rely on experimental browser APIs.")

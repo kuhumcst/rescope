@@ -1,4 +1,4 @@
-(ns kuhumcst.rescope.util
+(ns rescope.util
   (:require [clojure.string :as str]))
 
 ;; https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name

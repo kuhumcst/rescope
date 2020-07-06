@@ -1,7 +1,7 @@
-(ns kuhumcst.rescope.style-test
+(ns rescope.style-test
   (:require [clojure.test :refer [deftest is]]
             [shadow.resource :as resource]
-            [kuhumcst.rescope.style :as style]))
+            [rescope.style :as style]))
 
 (def css-example
   (resource/inline "examples/css/tei.css"))
