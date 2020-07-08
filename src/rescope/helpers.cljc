@@ -33,7 +33,9 @@
   "Merge the element metadata into the attr. Mimics the behaviour of reagent."
   [[tag attr & content :as node]]
   (if-let [m (meta node)]
-    (update node 1 merge m)
+    (if (map? attr)
+      (update node 1 merge m)
+      (into [tag m] content))
     node))
 
 (defn default-fn
