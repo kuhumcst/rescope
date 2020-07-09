@@ -1,4 +1,5 @@
 (ns rescope.helpers
+  "Helper functions for transforming Hiccup into valid HTML using Cuphic."
   (:require [clojure.set :as set]
             [rescope.util :as util]))
 
@@ -39,7 +40,10 @@
     node))
 
 (defn default-fn
-  "Return function applying default transformations based on `opts`."
+  "Return function applying default transformations based on `opts`.
+
+  This is meant to be used as the :default fn in the final stage of a Cuphic
+  rewrite to ensure that the Hiccup will convert to standards-compliant HTML."
   [{:keys [attr-kmap prefix] :as opts}]
   (fn [node]
     (->> node
