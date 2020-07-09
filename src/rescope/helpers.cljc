@@ -26,9 +26,11 @@
   "Transform a hiccup vector node `loc` to a valid custom element name by
   setting a custom `prefix`."
   [prefix node]
-  (let [tag     (name (first node))
-        new-tag (keyword (util/prefixed prefix tag))]
-    (assoc node 0 new-tag)))
+  (if (keyword? (first node))
+    (let [tag     (name (first node))
+          new-tag (keyword (util/prefixed prefix tag))]
+      (assoc node 0 new-tag))
+    node))
 
 (defn meta-into-attr
   "Merge the element metadata into the attr. Mimics the behaviour of reagent."

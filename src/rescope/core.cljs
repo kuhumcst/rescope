@@ -10,7 +10,9 @@
   "Get a set of all custom tags (as strings) found in a `hiccup` tree."
   [hiccup]
   (->> (select/all hiccup)
-       (map (comp str/lower-case name first))
+       (map first)
+       (filter keyword?)
+       (map (comp str/lower-case name))
        (filter util/valid-custom-tag?)
        (set)))
 
